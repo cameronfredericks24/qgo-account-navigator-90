@@ -1,0 +1,297 @@
+/* Enhanced Account Search Component Styles */
+
+/* Card hover animations and transitions */
+.account-card {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 4px solid transparent;
+    cursor: pointer;
+}
+
+.account-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Status-based border colors */
+.account-card[data-status="active"] {
+    border-left-color: #04844b;
+}
+
+.account-card[data-status="inactive"] {
+    border-left-color: #fe9339;
+}
+
+.account-card[data-status="pending"] {
+    border-left-color: #0176d3;
+}
+
+.account-card[data-status="prospect"] {
+    border-left-color: #706e6b;
+}
+
+/* Enhanced search input styling */
+.slds-input:focus {
+    box-shadow: 0 0 0 2px #1589ee;
+    border-color: #1589ee;
+}
+
+/* Pill styling for preferences */
+.slds-pill_small {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Gradient header styling */
+.gradient-header {
+    background: linear-gradient(135deg, #1589ee 0%, #0d9488 100%);
+}
+
+/* Travel metrics cards */
+.travel-metric {
+    background: #f3f2f2;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.travel-metric:hover {
+    background: #ecebea;
+}
+
+/* Loading spinner container */
+.loading-container {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Search suggestions (future enhancement) */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #d8dde6;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Quick filter pills styling */
+.quick-filter-pill {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-filter-pill:hover {
+    transform: scale(1.05);
+}
+
+/* Results count badge */
+.results-badge {
+    background: linear-gradient(135deg, #0176d3, #1589ee);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-weight: 600;
+}
+
+/* Card header icons */
+.status-icon-container {
+    transition: transform 0.2s ease;
+}
+
+.account-card:hover .status-icon-container {
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .account-card {
+        margin-bottom: 1rem;
+    }
+    
+    .slds-col.slds-large-size_1-of-2 {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
+/* Animation keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Success notification styling */
+.success-notification {
+    animation: slideInFromTop 0.3s ease-out;
+}
+
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Enhanced button styling */
+.action-button {
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Travel preference pills container */
+.preferences-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+/* Enhanced pagination */
+.pagination-container {
+    background: #fafaf9;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e5e5e5;
+}
+
+/* Contact information styling */
+.contact-info {
+    border-left: 3px solid #0176d3;
+    padding-left: 0.75rem;
+    background: rgba(1, 118, 211, 0.02);
+    border-radius: 0 4px 4px 0;
+}
+
+/* Industry badge styling */
+.industry-badge {
+    background: rgba(1, 118, 211, 0.1);
+    color: #0176d3;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Enhanced card footer */
+.card-footer-enhanced {
+    background: #fafaf9;
+    border-top: 1px solid #e5e5e5;
+    padding: 1rem;
+}
+
+/* Search input container */
+.search-input-container {
+    position: relative;
+}
+
+/* Filter section styling */
+.filter-section {
+    background: linear-gradient(135deg, #fafaf9 0%, #f3f2f2 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e5e5e5;
+}
+
+/* Account metrics grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.metric-item {
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.metric-item:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+/* Travel volume indicator */
+.volume-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.volume-high { background-color: #04844b; }
+.volume-medium { background-color: #fe9339; }
+.volume-low { background-color: #706e6b; }
+.volume-new { background-color: #0176d3; }
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #706e6b;
+}
+
+.empty-state-icon {
+    opacity: 0.5;
+    margin-bottom: 1rem;
+}
+
+/* Loading state enhancements */
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Dark mode support (future enhancement) */
+@media (prefers-color-scheme: dark) {
+    .account-card {
+        background-color: #1a1a1a;
+        border-color: #333;
+    }
+    
+    .travel-metric {
+        background: #2a2a2a;
+    }
+    
+    .filter-section {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    }
+}

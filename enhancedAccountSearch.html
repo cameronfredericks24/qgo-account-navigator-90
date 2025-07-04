@@ -1,0 +1,408 @@
+<template>
+    <!-- Enhanced Account Search Component with Travel Industry UX -->
+    <div class="slds-card slds-card_boundary">
+        <!-- Search Header with Visual Identity -->
+        <header class="slds-card__header slds-grid slds-grid_align-spread slds-p-around_medium" style="background: linear-gradient(135deg, #1589ee 0%, #0d9488 100%); color: white;">
+            <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:account" size="large" class="slds-icon_inverse"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-card__header-title slds-text-heading_large">
+                        Corporate Account Explorer
+                    </h1>
+                    <p class="slds-text-body_regular slds-m-top_xx-small" style="opacity: 0.9;">
+                        Discover and manage your travel partnership accounts with intelligent search
+                    </p>
+                </div>
+            </div>
+            <div class="slds-no-flex">
+                <lightning-button 
+                    variant="brand-outline" 
+                    label="Create New Account" 
+                    icon-name="utility:add"
+                    onclick={handleCreateAccount}
+                    class="slds-button_inverse">
+                </lightning-button>
+            </div>
+        </header>
+
+        <!-- Smart Search and Filters Panel -->
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- Advanced Search Section -->
+            <div class="slds-section slds-is-open slds-m-bottom_large">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">
+                        <lightning-icon icon-name="utility:search" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Intelligent Search & Filters
+                    </span>
+                </h3>
+                
+                <!-- Search Input with Enhanced UX -->
+                <div class="slds-section__content slds-p-around_medium">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- Primary Search -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="primary-search">
+                                    <span class="slds-required">*</span>Search Accounts
+                                </label>
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                    <lightning-icon icon-name="utility:search" size="x-small" class="slds-input__icon slds-input__icon_left"></lightning-icon>
+                                    <input 
+                                        type="search" 
+                                        id="primary-search"
+                                        class="slds-input" 
+                                        placeholder="Company name, contact, or industry..."
+                                        value={searchTerm}
+                                        oninput={handleSearchInput}
+                                        onfocus={handleSearchFocus} />
+                                </div>
+                                <template if:true={isSearching}>
+                                    <div class="slds-form-element__help">
+                                        <lightning-spinner size="x-small" class="slds-m-right_x-small"></lightning-spinner>
+                                        Searching accounts...
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Industry Filter -->
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_2-of-12">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="industry-filter">Industry Focus</label>
+                                <div class="slds-form-element__control">
+                                    <lightning-combobox
+                                        name="industry"
+                                        label=""
+                                        value={industryFilter}
+                                        placeholder="All Industries"
+                                        options={industryOptions}
+                                        onchange={handleFilterChange}
+                                        data-field="industry">
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_2-of-12">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="status-filter">Account Status</label>
+                                <div class="slds-form-element__control">
+                                    <lightning-combobox
+                                        name="status"
+                                        label=""
+                                        value={statusFilter}
+                                        placeholder="All Status"
+                                        options={statusOptions}
+                                        onchange={handleFilterChange}
+                                        data-field="status">
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sort Options -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="sort-options">Sort Results</label>
+                                <div class="slds-form-element__control">
+                                    <lightning-combobox
+                                        name="sort"
+                                        label=""
+                                        value={sortBy}
+                                        placeholder="Sort by..."
+                                        options={sortOptions}
+                                        onchange={handleFilterChange}
+                                        data-field="sort">
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filter Chips -->
+                    <div class="slds-m-top_medium">
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                            <div class="slds-col">
+                                <span class="slds-text-body_small slds-text-color_weak slds-m-right_small">Quick Filters:</span>
+                                <lightning-pill 
+                                    label="Active Partnerships" 
+                                    onclick={handleQuickFilter} 
+                                    data-filter="active"
+                                    class="slds-m-right_x-small">
+                                </lightning-pill>
+                                <lightning-pill 
+                                    label="High Travel Volume" 
+                                    onclick={handleQuickFilter} 
+                                    data-filter="high-volume"
+                                    class="slds-m-right_x-small">
+                                </lightning-pill>
+                                <lightning-pill 
+                                    label="Recent Activity" 
+                                    onclick={handleQuickFilter} 
+                                    data-filter="recent"
+                                    class="slds-m-right_x-small">
+                                </lightning-pill>
+                            </div>
+                            <div class="slds-col slds-no-flex">
+                                <span class="slds-badge slds-theme_info">
+                                    {filteredAccountCount} accounts found
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section with Enhanced Cards -->
+            <div class="slds-section slds-is-open">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small">
+                        <lightning-icon icon-name="standard:account" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Search Results
+                    </span>
+                </h3>
+                
+                <div class="slds-section__content">
+                    <!-- Loading State -->
+                    <template if:true={isLoading}>
+                        <div class="slds-align_absolute-center slds-p-around_xx-large">
+                            <lightning-spinner size="medium"></lightning-spinner>
+                            <p class="slds-m-top_small slds-text-color_weak">Loading travel accounts...</p>
+                        </div>
+                    </template>
+
+                    <!-- Account Cards Grid -->
+                    <template if:false={isLoading}>
+                        <template if:true={hasResults}>
+                            <div class="slds-grid slds-gutters slds-wrap">
+                                <template for:each={filteredAccounts} for:item="account">
+                                    <div key={account.id} class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-m-bottom_medium">
+                                        <!-- Enhanced Account Card -->
+                                        <div class="slds-card slds-card_boundary account-card" 
+                                             onclick={handleAccountClick} 
+                                             data-account-id={account.id}
+                                             style="transition: all 0.2s ease; cursor: pointer;">
+                                            
+                                            <!-- Card Header with Status -->
+                                            <header class="slds-card__header slds-grid slds-grid_align-spread">
+                                                <div class="slds-media slds-media_center">
+                                                    <div class="slds-media__figure">
+                                                        <span class={account.statusIconClass}>
+                                                            <lightning-icon icon-name={account.statusIcon} size="small" class="slds-icon_inverse"></lightning-icon>
+                                                        </span>
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                        <h2 class="slds-card__header-title slds-text-heading_small">
+                                                            <span class="slds-truncate" title={account.companyName}>
+                                                                {account.companyName}
+                                                            </span>
+                                                        </h2>
+                                                        <p class="slds-text-body_small slds-text-color_weak">
+                                                            {account.industry}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-no-flex">
+                                                    <lightning-badge label={account.statusLabel} class={account.statusBadgeClass}></lightning-badge>
+                                                </div>
+                                            </header>
+
+                                            <!-- Card Body with Travel Metrics -->
+                                            <div class="slds-card__body slds-card__body_inner">
+                                                <!-- Contact Information -->
+                                                <div class="slds-grid slds-gutters_x-small slds-m-bottom_small">
+                                                    <div class="slds-col slds-size_1-of-2">
+                                                        <div class="slds-media slds-media_small">
+                                                            <div class="slds-media__figure">
+                                                                <lightning-icon icon-name="utility:user" size="x-small" class="slds-icon-text-default"></lightning-icon>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <p class="slds-text-body_small slds-text-color_default">
+                                                                    {account.contactPerson}
+                                                                </p>
+                                                                <p class="slds-text-body_small slds-text-color_weak">
+                                                                    {account.email}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-2">
+                                                        <div class="slds-media slds-media_small">
+                                                            <div class="slds-media__figure">
+                                                                <lightning-icon icon-name="utility:phone_portrait" size="x-small" class="slds-icon-text-default"></lightning-icon>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <p class="slds-text-body_small slds-text-color_default">
+                                                                    {account.phone}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Travel Metrics -->
+                                                <div class="slds-grid slds-gutters_x-small slds-m-bottom_small">
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div class="slds-text-align_center slds-p-vertical_x-small" style="background: #f3f2f2; border-radius: 4px;">
+                                                            <p class="slds-text-heading_small slds-text-color_default">
+                                                                {account.totalBookings}
+                                                            </p>
+                                                            <p class="slds-text-body_small slds-text-color_weak">
+                                                                Bookings
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div class="slds-text-align_center slds-p-vertical_x-small" style="background: #f3f2f2; border-radius: 4px;">
+                                                            <p class="slds-text-heading_small slds-text-color_default">
+                                                                {account.travelVolume}
+                                                            </p>
+                                                            <p class="slds-text-body_small slds-text-color_weak">
+                                                                Monthly
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-3">
+                                                        <div class="slds-text-align_center slds-p-vertical_x-small" style="background: #f3f2f2; border-radius: 4px;">
+                                                            <p class="slds-text-heading_small slds-text-color_default">
+                                                                {account.lastActivity}
+                                                            </p>
+                                                            <p class="slds-text-body_small slds-text-color_weak">
+                                                                Last Active
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Travel Preferences Preview -->
+                                                <div class="slds-m-bottom_small">
+                                                    <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small">Travel Preferences:</p>
+                                                    <div class="slds-grid slds-gutters_xx-small">
+                                                        <template if:true={account.preferredClass}>
+                                                            <lightning-pill label={account.preferredClass} class="slds-pill_small"></lightning-pill>
+                                                        </template>
+                                                        <template if:true={account.hotelCategory}>
+                                                            <lightning-pill label={account.hotelCategory} class="slds-pill_small"></lightning-pill>
+                                                        </template>
+                                                        <template if:true={account.visaAssistance}>
+                                                            <lightning-pill label="Visa Assistance" class="slds-pill_small"></lightning-pill>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Card Footer with Actions -->
+                                            <footer class="slds-card__footer">
+                                                <div class="slds-grid slds-grid_align-spread">
+                                                    <div class="slds-col">
+                                                        <lightning-button 
+                                                            variant="base" 
+                                                            label="View Details" 
+                                                            icon-name="utility:preview"
+                                                            onclick={handleViewDetails}
+                                                            data-account-id={account.id}
+                                                            class="slds-m-right_x-small">
+                                                        </lightning-button>
+                                                    </div>
+                                                    <div class="slds-col slds-no-flex">
+                                                        <lightning-button 
+                                                            variant="brand" 
+                                                            label="Create Booking" 
+                                                            icon-name="utility:event"
+                                                            onclick={handleCreateBooking}
+                                                            data-account-id={account.id}
+                                                            data-account-name={account.companyName}>
+                                                        </lightning-button>
+                                                    </div>
+                                                </div>
+                                            </footer>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Pagination -->
+                            <template if:true={showPagination}>
+                                <div class="slds-grid slds-grid_align-center slds-m-top_large">
+                                    <lightning-button 
+                                        variant="neutral" 
+                                        label="Previous" 
+                                        icon-name="utility:chevronleft"
+                                        icon-position="left"
+                                        disabled={isFirstPage}
+                                        onclick={handlePreviousPage}
+                                        class="slds-m-right_small">
+                                    </lightning-button>
+                                    <span class="slds-badge slds-badge_lightest slds-m-horizontal_small">
+                                        Page {currentPage} of {totalPages}
+                                    </span>
+                                    <lightning-button 
+                                        variant="neutral" 
+                                        label="Next" 
+                                        icon-name="utility:chevronright"
+                                        icon-position="right"
+                                        disabled={isLastPage}
+                                        onclick={handleNextPage}
+                                        class="slds-m-left_small">
+                                    </lightning-button>
+                                </div>
+                            </template>
+                        </template>
+
+                        <!-- No Results State -->
+                        <template if:false={hasResults}>
+                            <div class="slds-align_absolute-center slds-p-around_xx-large">
+                                <div class="slds-text-align_center">
+                                    <lightning-icon icon-name="utility:search" size="large" class="slds-icon-text-light slds-m-bottom_small"></lightning-icon>
+                                    <h3 class="slds-text-heading_small slds-m-bottom_small">No Travel Accounts Found</h3>
+                                    <p class="slds-text-body_regular slds-text-color_weak slds-m-bottom_medium">
+                                        Try adjusting your search criteria or create a new corporate travel account.
+                                    </p>
+                                    <lightning-button 
+                                        variant="brand" 
+                                        label="Create New Account" 
+                                        icon-name="utility:add"
+                                        onclick={handleCreateAccount}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Success Notification -->
+    <template if:true={showSuccessMessage}>
+        <div class="slds-notify_container slds-is-relative">
+            <div class="slds-notify slds-notify_alert slds-theme_success" role="alert">
+                <span class="slds-assistive-text">Success</span>
+                <span class="slds-icon_container slds-icon-utility-success slds-m-right_x-small">
+                    <lightning-icon icon-name="utility:success" size="small" class="slds-icon_inverse"></lightning-icon>
+                </span>
+                <h2>
+                    Account successfully created! You can now search for this account or create bookings.
+                    <lightning-button 
+                        variant="base" 
+                        label="Create Booking" 
+                        icon-name="utility:event"
+                        onclick={handleBookNewAccount}
+                        class="slds-m-left_medium">
+                    </lightning-button>
+                </h2>
+                <div class="slds-notify__close">
+                    <lightning-button-icon 
+                        icon-name="utility:close" 
+                        variant="bare-inverse" 
+                        onclick={hideSuccessMessage}
+                        alternative-text="Close">
+                    </lightning-button-icon>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,104 @@
+/* Enhanced Account Creation Wizard Styles */
+
+/* Modal container animations */
+.account-creation-modal {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Form section styling */
+.form-section {
+    padding: 0;
+}
+
+/* Enhanced input styling */
+.enhanced-input input {
+    transition: all 0.2s ease;
+}
+
+.enhanced-input input:focus {
+    box-shadow: 0 0 0 2px #1589ee;
+    border-color: #1589ee;
+}
+
+/* Card hover effects */
+.slds-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+/* Progress indicator enhancements */
+.slds-progress-indicator .slds-progress__item {
+    transition: all 0.2s ease;
+}
+
+/* Action button styling */
+.action-button {
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* File upload area */
+.file-upload-area {
+    border: 2px dashed #d8dde6;
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+    transition: border-color 0.2s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #1589ee;
+    background: rgba(21, 137, 238, 0.02);
+}
+
+/* Loading spinner overlay */
+.slds-spinner_container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    z-index: 9999;
+}
+
+/* Form validation styling */
+.slds-form-element.slds-has-error .enhanced-input input {
+    border-color: #c23934;
+    box-shadow: 0 0 0 1px #c23934 inset;
+}
+
+/* Required field indicators */
+.slds-required {
+    color: #c23934;
+    margin-right: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-modal__container {
+        max-width: 95vw !important;
+        margin: 1rem;
+    }
+    
+    .slds-grid.slds-gutters.slds-wrap .slds-col {
+        padding: 0.25rem;
+    }
+}
