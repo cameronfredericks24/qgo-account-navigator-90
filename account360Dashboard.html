@@ -1,0 +1,57 @@
+<template>
+    <div class="dashboard-container">
+        <!-- Header Section (Account details, always shown if account selected or recordId present) -->
+        <template if:true={showDashboard}>
+            <div class="account-header-horizontal">
+                <div class="header-icon-large">
+                    <span class="icon-bg-large">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><rect width="56" height="56" rx="16" fill="#2563eb"/><path d="M28 31c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0 2c-5.523 0-10 2.791-10 6.25V41a1 1 0 001 1h18a1 1 0 001-1v-1.75C38 35.791 33.523 33 28 33z" fill="#fff"/></svg>
+                    </span>
+                </div>
+                <div class="header-fields-row">
+                    <div class="header-field header-name">
+                        <span class="icon icon-blue">👤</span>
+                        <span class="header-label">Name</span>
+                        <span class="header-value">{accountDetails.Name}</span>
+                    </div>
+                    <div class="header-field">
+                        <span class="icon icon-purple">📇</span>
+                        <span class="header-label">Contact</span>
+                        <span class="header-value">{contactDisplay}</span>
+                    </div>
+                    <div class="header-field">
+                        <span class="icon icon-orange">👥</span>
+                        <span class="header-label">Employees</span>
+                        <span class="header-value">{employeesDisplay}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Summary Section -->
+            <div class="account-summary-section">
+                <div class="summary-cards">
+                    <div class="summary-card total-bookings">
+                        <div class="card-label"><span class="icon icon-blue">📦</span>Total Bookings</div>
+                        <div class="card-value">{accountSummary.totalBookings}</div>
+                    </div>
+                    <div class="summary-card total-amount">
+                        <div class="card-label"><span class="icon icon-green">💰</span>Total Booking Amount</div>
+                        <div class="card-value">₹ {accountSummary.totalAmount}</div>
+                    </div>
+                    <div class="summary-card total-flight">
+                        <div class="card-label"><span class="icon icon-purple">✈️</span>Total Flight Bookings</div>
+                        <div class="card-value">{accountSummary.totalFlightBookings}</div>
+                    </div>
+                    <div class="summary-card total-hotel">
+                        <div class="card-label"><span class="icon icon-orange">🏨</span>Total Hotel Bookings</div>
+                        <div class="card-value">{accountSummary.totalHotelBookings}</div>
+                    </div>
+                    <div class="summary-card total-revenue">
+                        <div class="card-label"><span class="icon icon-green">📈</span>Total Revenue from Bookings</div>
+                        <div class="card-value">₹ {accountSummary.totalRevenue}</div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template> 

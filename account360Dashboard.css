@@ -1,0 +1,243 @@
+.dashboard-container {
+    background: #fafbfc;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.search-bar-section {
+    margin-bottom: 24px;
+}
+
+.account-summary-section {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.summary-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+}
+
+.summary-card {
+    background: #f4f8ff;
+    border-radius: 10px;
+    padding: 20px 32px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.summary-card.total-bookings { background: #eaf3ff; color: #2563eb; }
+.summary-card.total-amount { background: #e6f9ef; color: #059669; }
+.summary-card.total-flight { background: #f3e8ff; color: #a21caf; }
+.summary-card.total-hotel { background: #fff7ed; color: #ea580c; }
+.summary-card.total-revenue { background: #e6f9ef; color: #059669; }
+
+.card-label {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+.card-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.booking-status-section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+.status-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+}
+.status-card {
+    border-radius: 10px;
+    padding: 18px 28px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.status-card.initiated { background: #fef9c3; color: #b45309; }
+.status-card.confirmed { background: #dcfce7; color: #15803d; }
+.status-card.rescheduled { background: #dbeafe; color: #2563eb; }
+.status-card.cancelled { background: #fee2e2; color: #dc2626; }
+.status-card.completed { background: #dcfce7; color: #15803d; }
+
+.status-label {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+.status-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.search-dropdown {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-top: 4px;
+    z-index: 10;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.dropdown-item {
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #111827;
+    transition: background 0.15s;
+}
+.dropdown-item:hover {
+    background: #f3f4f6;
+}
+
+.account-header {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    padding: 24px 32px 16px 24px;
+    margin-bottom: 24px;
+    gap: 24px;
+}
+.header-icon .icon-bg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #eaf3ff;
+}
+.header-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.header-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+.header-meta {
+    font-size: 1.05rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.meta-sep {
+    margin: 0 8px;
+    color: #cbd5e1;
+}
+
+.summary-card, .status-card {
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+}
+.summary-card:hover, .status-card:hover {
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 4px 16px rgba(37,99,235,0.10);
+    z-index: 1;
+}
+
+/* Icon color utility classes */
+.icon-blue { color: #2563eb; }
+.icon-green { color: #059669; }
+.icon-purple { color: #a21caf; }
+.icon-orange { color: #ea580c; }
+.icon-red { color: #dc2626; }
+.icon-yellow { color: #b45309; }
+.icon-gray { color: #64748b; }
+
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 8px;
+}
+
+.account-header-horizontal {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    padding: 24px 32px;
+    margin-bottom: 28px;
+    gap: 32px;
+}
+.header-icon-large .icon-bg-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    background: #eaf3ff;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+.header-fields-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+.header-field {
+    font-size: 1.1rem;
+    color: #334155;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 8px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.header-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1e293b;
+    background: transparent;
+    box-shadow: none;
+    padding-left: 0;
+}
+
+.header-label {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin-right: 6px;
+    font-weight: 500;
+}
+.header-value {
+    font-size: 1.15rem;
+    color: #1e293b;
+    font-weight: 600;
+} 

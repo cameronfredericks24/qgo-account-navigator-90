@@ -1,0 +1,259 @@
+<template>
+    <div class="slds-modal slds-fade-in-open" style="display:block;">
+        <div class="slds-modal__container" style="max-width: 750px; width: 95vw; max-height: max-content; overflow-y: auto;">
+            <!-- Close Button -->
+            <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={handleClose}>
+                <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+            </button>
+            <header class="slds-modal__header">
+                <h2 class="slds-modal__title">New Corporate Account</h2>
+            </header>
+            <!-- Progress Indicator -->
+            <div class="slds-p-around_small slds-theme_shade">
+                <lightning-progress-indicator current-step={currentStep} type="path" variant="base">
+                    <lightning-progress-step label="Company" value="1"></lightning-progress-step>
+                    <lightning-progress-step label="Travel Prefs" value="2"></lightning-progress-step>
+                    <lightning-progress-step label="Agreement" value="3"></lightning-progress-step>
+                    <lightning-progress-step label="Employees" value="4"></lightning-progress-step>
+                </lightning-progress-indicator>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium slds-theme_default">
+                <!-- Loading Spinner -->
+                <template if:true={isLoading}>
+                    <div class="slds-is-relative slds-p-around_medium">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+
+                <!-- Account Creation Pages (moved from TravelBookingWizard) -->
+                <template if:true={isAccountPage1}>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:account" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Company Identification
+                        </h3>
+                        <lightning-input label="Company Name" value={companyName} onchange={handleInputChange} data-id="companyName" required></lightning-input>
+                        <lightning-combobox label="Business Division" value={businessDivision} options={businessDivisionOptions} onchange={handleInputChange} data-id="businessDivision" required></lightning-combobox>
+                        <lightning-combobox label="Company Size" value={companySize} options={companySizeOptions} onchange={handleInputChange} data-id="companySize" required></lightning-combobox>
+                        <lightning-input-address
+                            required
+                            address-label="Head Office Address"
+                            street-label="Street"
+                            city-label="City"
+                            country-label="Country"
+                            province-label="State"
+                            postal-code-label="PostalCode"
+                            street={headOfficeStreet}
+                            city={headOfficeCity}
+                            country={headOfficeCountry}
+                            province={headOfficeState}
+                            postal-code={headOfficePostalCode}
+                            onchange={handleAddressChange}
+                            data-id="headOfficeAddress"
+                            field-level-help="Enter the full address of the head office">
+                        </lightning-input-address>
+                        <lightning-input label="Tax ID" value={gstin} onchange={handleInputChange} data-id="gstin"></lightning-input>
+                    </div>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:contact" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Contact Person Details
+                        </h3>
+                        <lightning-input label="First Name" value={contactFirstName} onchange={handleInputChange} data-id="contactFirstName" required></lightning-input>
+                        <lightning-input label="Last Name" value={contactLastName} onchange={handleInputChange} data-id="contactLastName" required></lightning-input>
+                        <lightning-input label="Designation" value={contactDesignation} onchange={handleInputChange} data-id="contactDesignation"></lightning-input>
+                        <lightning-input label="Email ID" value={contactEmail} onchange={handleInputChange} data-id="contactEmail"></lightning-input>
+                        <lightning-input type="checkbox" label="Is Decision Maker" checked={isDecisionMaker} onchange={handleInputChange} data-id="isDecisionMaker"></lightning-input>
+                    </div>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:travel_mode" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Travel Overview
+                        </h3>
+                        <lightning-input label="Travel Volume (Monthly)" value={travelVolume} onchange={handleInputChange} data-id="travelVolume" required></lightning-input>
+                        <lightning-checkbox-group label="Preferred Services" options={preferredServicesOptions} value={preferredServices} onchange={handleInputChange} data-id="preferredServices"></lightning-checkbox-group>
+                        <lightning-combobox label="Urgency to Onboard" value={urgencyToOnboard} options={urgencyToOnboardOptions} onchange={handleInputChange} data-id="urgencyToOnboard"></lightning-combobox>
+                        <lightning-radio-group label="Travel Policy" options={yesNoOptions} value={travelPolicy} onchange={handleInputChange} data-id="travelPolicy"></lightning-radio-group>
+                        <!-- Travel Policy Document Upload (only if travelPolicy is Yes) -->
+                        <template if:true={showTravelPolicyUpload}>
+                            <div class="slds-m-bottom_small">
+                                <label class="slds-form-element__label">Travel Policy Document Upload</label>
+                                <input type="file" multiple onchange={handleFileInputChange} data-category="travelPolicy" />
+                                <template if:true={hasTravelPolicyFiles}>
+                                    <div class="slds-m-top_x-small">
+                                        <template for:each={selectedFiles.travelPolicy} for:item="file" for:index="index">
+                                            <div key={file.name} class="slds-box slds-box_xx-small slds-m-bottom_xx-small slds-grid slds-grid_align-spread">
+                                                <span class="slds-truncate" title={file.name}>{file.name}</span>
+                                                <button class="slds-button slds-button_icon" title="Remove" onclick={removeFile} data-category="travelPolicy" data-index={index}>
+                                                    <lightning-icon icon-name="utility:delete" alternative-text="Remove" size="x-small"></lightning-icon>
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template if:true={isAccountPage2}>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:travel_mode" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Travel Preferences Setup
+                        </h3>
+                        <lightning-checkbox-group label="Preferred Airlines" options={preferredAirlinesOptions} value={preferredAirlines} onchange={handleInputChange} data-id="preferredAirlines"></lightning-checkbox-group>
+                        <lightning-combobox label="Preferred Class" value={preferredClass} options={preferredClassOptions} onchange={handleInputChange} data-id="preferredClass"></lightning-combobox>
+                        <lightning-radio-group label="Red-eye Flights Allowed" options={yesNoOptions} value={redEyeFlightsAllowed} onchange={handleInputChange} data-id="redEyeFlightsAllowed"></lightning-radio-group>
+                        <lightning-input label="Advance Booking Window (in days)" value={advanceBookingWindow} onchange={handleInputChange} data-id="advanceBookingWindow"></lightning-input>
+                        <lightning-combobox label="Maximum Layover Allowed" value={maxLayoverAllowed} options={maxLayoverAllowedOptions} onchange={handleInputChange} data-id="maxLayoverAllowed"></lightning-combobox>
+                        <lightning-input label="Frequent Routes" value={frequentRoutes} onchange={handleInputChange} data-id="frequentRoutes"></lightning-input>
+                    </div>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:hotel" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Hotel Preferences
+                        </h3>
+                        <lightning-combobox label="Hotel Category" value={hotelCategory} options={hotelCategoryOptions} onchange={handleInputChange} data-id="hotelCategory"></lightning-combobox>
+                        <lightning-checkbox-group label="Preferred Hotel Chains" options={preferredHotelChainsOptions} value={preferredHotelChains} onchange={handleInputChange} data-id="preferredHotelChains"></lightning-checkbox-group>
+                        <lightning-combobox label="Room Type" value={roomType} options={roomTypeOptions} onchange={handleInputChange} data-id="roomType"></lightning-combobox>
+                        <lightning-combobox label="Meal Preference" value={mealPreference} options={mealPreferenceOptions} onchange={handleInputChange} data-id="mealPreference"></lightning-combobox>
+                        <lightning-input label="Blacklisted Hotels" value={blacklistedHotels} onchange={handleInputChange} data-id="blacklistedHotels"></lightning-input>
+                    </div>
+                    <!-- Visa Documents File Upload -->
+                    <template if:true={hasVisaDocumentsFiles}>
+                        <div class="slds-m-top_x-small">
+                            <template for:each={selectedFiles.visaDocuments} for:item="file" for:index="index">
+                                <div key={file.name} class="slds-box slds-box_xx-small slds-m-bottom_xx-small slds-grid slds-grid_align-spread">
+                                    <span class="slds-truncate" title={file.name}>{file.name}</span>
+                                    <button class="slds-button slds-button_icon" title="Remove" onclick={removeFile} data-category="visaDocuments" data-index={index}>
+                                        <lightning-icon icon-name="utility:delete" alternative-text="Remove" size="x-small"></lightning-icon>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </template>
+                <template if:true={isAccountPage3}>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:agreement" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Service Agreement Details
+                        </h3>
+                        <lightning-radio-group label="Agreement Signed?" options={yesNoOptions} value={agreementSigned} onchange={handleInputChange} data-id="agreementSigned"></lightning-radio-group>
+                        <lightning-input type="date" label="Start Date" value={agreementStartDate} onchange={handleInputChange} data-id="agreementStartDate"></lightning-input>
+                        <template if:true={agreementStartDate}>
+                            <div>Formatted: {formattedAgreementStartDate}</div>
+                        </template>
+                        <lightning-input type="date" label="End Date" value={agreementEndDate} onchange={handleInputChange} data-id="agreementEndDate"></lightning-input>
+                        <template if:true={agreementEndDate}>
+                            <div>Formatted: {formattedAgreementEndDate}</div>
+                        </template>
+                        <!-- Agreement File Upload (only if agreementSigned is Yes) -->
+                        <template if:true={showAgreementFileUpload}>
+                            <div class="slds-m-bottom_small">
+                                <label class="slds-form-element__label">Agreement File Upload</label>
+                                <input type="file" multiple onchange={handleFileInputChange} data-category="agreement" />
+                                <template if:true={hasAgreementFiles}>
+                                    <div class="slds-m-top_x-small">
+                                        <template for:each={selectedFiles.agreement} for:item="file" for:index="index">
+                                            <div key={file.name} class="slds-box slds-box_xx-small slds-m-bottom_xx-small slds-grid slds-grid_align-spread">
+                                                <span class="slds-truncate" title={file.name}>{file.name}</span>
+                                                <button class="slds-button slds-button_icon" title="Remove" onclick={removeFile} data-category="agreement" data-index={index}>
+                                                    <lightning-icon icon-name="utility:delete" alternative-text="Remove" size="x-small"></lightning-icon>
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <lightning-combobox label="SLA Commitment" value={slaCommitment} options={slaCommitmentOptions} onchange={handleInputChange} data-id="slaCommitment"></lightning-combobox>
+                        <lightning-textarea label="Custom Terms" value={customTerms} onchange={handleInputChange} data-id="customTerms"></lightning-textarea>
+                    </div>
+                </template>
+                <template if:true={isAccountPage4}>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:employee" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Employee Management & Documents
+                        </h3>
+                        <!-- Employee Upload -->
+                        <div class="slds-m-bottom_small">
+                            <label class="slds-form-element__label">Employee Upload</label>
+                            <input type="file" multiple onchange={handleFileInputChange} data-category="employee" />
+                            <template if:true={hasEmployeeFiles}>
+                                <div class="slds-m-top_x-small">
+                                    <template for:each={selectedFiles.employee} for:item="file" for:index="index">
+                                        <div key={file.name} class="slds-box slds-box_xx-small slds-m-bottom_xx-small slds-grid slds-grid_align-spread">
+                                            <span class="slds-truncate" title={file.name}>{file.name}</span>
+                                            <button class="slds-button slds-button_icon" title="Remove" onclick={removeFile} data-category="employee" data-index={index}>
+                                                <lightning-icon icon-name="utility:delete" alternative-text="Remove" size="x-small"></lightning-icon>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                        <lightning-radio-group label="Do employees book directly?" options={yesNoOptions} value={employeesBookDirectly} onchange={handleInputChange} data-id="employeesBookDirectly"></lightning-radio-group>
+                        <lightning-radio-group label="Require booking approvals" options={yesNoOptions} value={requireBookingApprovals} onchange={handleInputChange} data-id="requireBookingApprovals"></lightning-radio-group>
+                        <lightning-combobox label="Max travel limit per employee (Trip wise)" value={maxTravelLimit} options={maxTravelLimitOptions} onchange={handleInputChange} data-id="maxTravelLimit"></lightning-combobox>
+                    </div>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            <lightning-icon icon-name="standard:contact" size="small" class="slds-m-right_x-small"></lightning-icon>
+                            Internal Admin Contacts
+                        </h3>
+                        <lightning-input label="Finance Contact Phone" value={financeContactPhone} onchange={handleInputChange} data-id="financeContactPhone"></lightning-input>
+                        <lightning-input label="Finance Contact Email" value={financeContactEmail} onchange={handleInputChange} data-id="financeContactEmail"></lightning-input>
+                        <lightning-input label="HR Contact Phone" value={hrContactPhone} onchange={handleInputChange} data-id="hrContactPhone"></lightning-input>
+                        <lightning-input label="HR Contact Email" value={hrContactEmail} onchange={handleInputChange} data-id="hrContactEmail"></lightning-input>
+                        <lightning-input label="Emergency Contact Phone" value={emergencyContactPhone} onchange={handleInputChange} data-id="emergencyContactPhone"></lightning-input>
+                        <lightning-input label="Emergency Contact Email" value={emergencyContactEmail} onchange={handleInputChange} data-id="emergencyContactEmail"></lightning-input>
+                    </div>
+                </template>
+                <template if:true={isConfirmationPage}>
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                            Are you continue with bookings?
+                        </h3>
+                        <lightning-radio-group
+                            name="continueWithBookings"
+                            label="Continue with Bookings?"
+                            options={confirmationOptions}
+                            value={continueWithBookings}
+                            onchange={handleConfirmationChange}
+                            type="radio">
+                        </lightning-radio-group>
+                        <lightning-button
+                            label="Submit"
+                            onclick={handleConfirmationSubmit}
+                            class="slds-m-top_medium">
+                        </lightning-button>
+                    </div>
+                </template>
+                <template if:true={showTravelBookingWizard}>
+                    <c-travel-booking-wizard></c-travel-booking-wizard>
+                </template>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning-button label="Back" onclick={handleBack} class="slds-m-right_small" if:true={showBack} disabled={isLoading}></lightning-button>
+                <lightning-button label="Next" variant="brand" onclick={handleNext} if:true={showNext} disabled={isLoading}></lightning-button>
+                <template if:true={showSaveAndContinue}>
+                    <lightning-button
+                        variant="brand"
+                        label="Save & Book"
+                        onclick={handleSaveAndBook}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="neutral"
+                        label="Save & Close"
+                        onclick={handleSaveAndClose}>
+                    </lightning-button>
+                </template>
+                <lightning-button label="Finish" variant="brand" onclick={handleClose} if:true={showFinish} disabled={isLoading}></lightning-button>
+            </footer>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

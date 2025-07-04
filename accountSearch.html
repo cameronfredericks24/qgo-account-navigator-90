@@ -1,0 +1,59 @@
+<template>
+    <div class="account-search-outer">
+        <label class="account-search-label">{label}</label>
+        <div class="account-search-box">
+            <template if:true={selectedAccount}>
+                <div class="account-pill">
+                    <span class="account-pill-label">{selectedAccount.Name}</span>
+                    <button class="account-pill-remove" title="Remove" onclick={clearSelection}>
+                        <lightning-icon icon-name="utility:close" size="x-small" class="account-pill-remove-icon"></lightning-icon>
+                    </button>
+                </div>
+            </template>
+            <template if:false={selectedAccount}>
+                <div class="account-search-input-wrapper">
+                    <input
+                        type="search"
+                        value={searchTerm}
+                        oninput={handleInputChange}
+                        onfocus={handleInputFocus}
+                        placeholder="Search Accounts..."
+                        class="account-search-input-native"
+                        autocomplete="off"
+                        aria-label="Search Accounts"
+                    />
+                    <span class="account-search-icon">
+                        <lightning-icon icon-name="utility:search" size="x-small" class="account-search-icon-svg"></lightning-icon>
+                    </span>
+                    <template if:true={showDropdown}>
+                        <div class="account-search-dropdown" role="listbox" data-show="true">
+                            <ul class="account-search-listbox" role="presentation">
+                                <template if:true={accounts.length}>
+                                    <template for:each={accounts} for:item="account">
+                                        <li key={account.Id} role="presentation" class="account-search-listbox-item">
+                                            <div class="account-search-option"
+                                                role="option"
+                                                data-id={account.Id}
+                                                data-name={account.Name}
+                                                onclick={handleSelect}>
+                                                <span class="account-search-option-label">{account.Name}</span>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </template>
+                                <template if:false={accounts.length}>
+                                    <li class="account-search-listbox-item">
+                                        <span class="account-search-no-results">No accounts found</span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+        <template if:true={error}>
+            <div class="account-search-error">{error}</div>
+        </template>
+    </div>
+</template>
