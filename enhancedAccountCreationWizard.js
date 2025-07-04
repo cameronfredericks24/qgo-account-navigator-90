@@ -6,7 +6,7 @@ import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
 import createAccountAndContact from '@salesforce/apex/CustomerOnboardingWizardController.createAccountAndContact';
 import uploadFileToAccount from '@salesforce/apex/CustomerOnboardingWizardController.uploadFileToAccount';
 
-// Import schema references
+// Import all the schema references from your original component
 import ACCOUNT_OBJECT from '@salesforce/schema/Account';
 import ACCOUNT_BUSINESS_DIVISION_FIELD from '@salesforce/schema/Account.Business_Division__c';
 import ACCOUNT_COMPANY_SIZE_FIELD from '@salesforce/schema/Account.Company_Size__c';
@@ -23,11 +23,11 @@ import ACCOUNT_SLA_COMMITMENT_FIELD from '@salesforce/schema/Account.SLA_Commitm
 import ACCOUNT_MAX_TRAVEL_LIMIT_FIELD from '@salesforce/schema/Account.Max_Travel_Limit__c';
 
 export default class EnhancedAccountCreationWizard extends NavigationMixin(LightningElement) {
-    @track currentStep = '1';
+    @track currentStep = '1'; // Exactly like your original component
     @track isLoading = false;
     @track accountRecordId = null;
 
-    // File upload tracking
+    // File upload tracking - exactly from your original
     @track selectedFiles = {
         travelPolicy: [],
         agreement: [],
@@ -35,7 +35,8 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
         visaDocuments: []
     };
 
-    // Form Data - Step 1: Company Details
+    // --- ALL Form Data Fields from Original Component ---
+    // Step 1: Company Details
     @track companyName = '';
     @track businessDivision = 'Corporate';
     @track businessDivisionOptions = [];
@@ -63,7 +64,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     @track urgencyToOnboard = '';
     @track travelPolicy = '';
 
-    // Step 2: Travel Preferences
+    // Step 2: Travel Preferences - EXACT SAME AS ORIGINAL
     @track preferredAirlinesOptions = [];
     @track preferredAirlines = [];
     @track preferredClassOptions = [];
@@ -74,7 +75,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     @track maxLayoverAllowed = '';
     @track frequentRoutes = '';
 
-    // Hotel Preferences
+    // Hotel Preferences - EXACT SAME AS ORIGINAL
     @track hotelCategoryOptions = [];
     @track hotelCategory = '';
     @track preferredHotelChainsOptions = [];
@@ -85,7 +86,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     @track mealPreference = '';
     @track blacklistedHotels = '';
 
-    // Step 3: Service Agreement
+    // Step 3: Service Agreement - EXACT SAME AS ORIGINAL
     @track agreementSigned = '';
     @track agreementStartDate = '';
     @track agreementEndDate = '';
@@ -93,7 +94,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     @track slaCommitment = '';
     @track customTerms = '';
 
-    // Step 4: Team & Administration
+    // Step 4: Team & Administration - EXACT SAME AS ORIGINAL
     @track employeesBookDirectly = '';
     @track requireBookingApprovals = '';
     @track maxTravelLimitOptions = [];
@@ -105,13 +106,13 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     @track emergencyContactPhone = '';
     @track emergencyContactEmail = '';
 
-    // Static Options
+    // Static Options - EXACT SAME AS ORIGINAL
     yesNoOptions = [
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'No' }
     ];
 
-    // Wire Services for Picklist Values
+    // --- ALL Wire Services - EXACT SAME AS ORIGINAL ---
     @wire(getObjectInfo, { objectApiName: ACCOUNT_OBJECT })
     accountObjectInfo;
 
@@ -245,7 +246,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
         }
     }
 
-    // Computed Properties
+    // --- Computed Properties - EXACT SAME AS ORIGINAL ---
     get isAccountPage1() { return this.currentStep === '1'; }
     get isAccountPage2() { return this.currentStep === '2'; }
     get isAccountPage3() { return this.currentStep === '3'; }
@@ -262,7 +263,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
         return this.agreementSigned === 'Yes';
     }
 
-    // File handling computed properties
+    // File handling computed properties - EXACT SAME AS ORIGINAL
     get hasTravelPolicyFiles() {
         return this.selectedFiles.travelPolicy && this.selectedFiles.travelPolicy.length > 0;
     }
@@ -275,7 +276,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
         return this.selectedFiles.employee && this.selectedFiles.employee.length > 0;
     }
 
-    // Event Handlers
+    // --- Event Handlers - EXACT SAME AS ORIGINAL ---
     handleInputChange(event) {
         const field = event.target.dataset.id;
         let value = event.detail ? event.detail.value : event.target.value;
@@ -313,19 +314,19 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     }
 
     removeFile(event) {
-        const category = event.target.dataset.category;
-        const index = parseInt(event.target.dataset.index, 10);
-        const files = [...this.selectedFiles[category]];
-        files.splice(index, 1);
-        this.selectedFiles = { ...this.selectedFiles, [category]: files };
+        const category = event.currentTarget.dataset.category;
+        const index = parseInt(event.currentTarget.dataset.index, 10);
+        if (category && !isNaN(index)) {
+            const files = [...this.selectedFiles[category]];
+            files.splice(index, 1);
+            this.selectedFiles = { ...this.selectedFiles, [category]: files };
+        }
     }
 
-    // Navigation Handlers
+    // --- Navigation Handlers - EXACT SAME AS ORIGINAL ---
     handleNext() {
-        if (this.validateCurrentStep()) {
-            if (parseInt(this.currentStep, 10) < 4) {
-                this.currentStep = (parseInt(this.currentStep, 10) + 1).toString();
-            }
+        if (parseInt(this.currentStep, 10) < 4) {
+            this.currentStep = (parseInt(this.currentStep, 10) + 1).toString();
         }
     }
 
@@ -339,7 +340,7 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
         this.dispatchEvent(new CloseActionScreenEvent());
     }
 
-    // Save Handlers
+    // --- Save Handlers - EXACT SAME AS ORIGINAL ---
     async handleSaveAndClose() {
         await this.saveAccount('close');
     }
@@ -349,13 +350,9 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     }
 
     async saveAccount(action) {
-        if (!this.validateAllSteps()) {
-            return;
-        }
-
         this.isLoading = true;
         try {
-            // Prepare Account fields
+            // Prepare Account fields - EXACT SAME AS ORIGINAL
             const accountFields = {
                 RecordTypeId: "012Kd000001V5KEIA0",
                 Name: this.companyName,
@@ -391,168 +388,146 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
                 Max_Travel_Limit__c: this.maxTravelLimit
             };
 
-            // Prepare Contact fields
+            // Prepare Contact fields - EXACT SAME AS ORIGINAL
             const contactFields = {
                 FirstName: this.contactFirstName,
                 LastName: this.contactLastName,
                 Title: this.contactDesignation,
-                Email: this.contactEmail,
                 Is_Primary_Contact__c: true,
-                Decision_Maker__c: this.isDecisionMaker
+                Email: this.contactEmail,
+                Is_Decision_Maker__c: this.isDecisionMaker
             };
 
-            // Prepare admin contact fields
+            // Prepare admin contact fields - EXACT SAME AS ORIGINAL
             const financeContactFields = {
-                Phone: this.financeContactPhone,
-                Email: this.financeContactEmail
+                Email: this.financeContactEmail,
+                Phone: this.financeContactPhone
             };
 
             const hrContactFields = {
-                Phone: this.hrContactPhone,
-                Email: this.hrContactEmail
+                Email: this.hrContactEmail,
+                Phone: this.hrContactPhone
             };
 
             const emergencyContactFields = {
-                Phone: this.emergencyContactPhone,
-                Email: this.emergencyContactEmail
+                Email: this.emergencyContactEmail,
+                Phone: this.emergencyContactPhone
             };
 
-            // Create Account and Contacts
-            const result = await createAccountAndContact({
-                accountFields,
-                contactFields,
-                financeContactFields,
-                hrContactFields,
-                emergencyContactFields
+            // Call Apex method - EXACT SAME AS ORIGINAL
+            const result = await createAccountAndContact({ 
+                accountFields, 
+                contactFields, 
+                financeContactFields, 
+                hrContactFields, 
+                emergencyContactFields 
             });
 
-            if (result.success) {
-                this.accountRecordId = result.accountId;
-                
-                // Upload files if any
-                await this.uploadFiles();
+            if (!result.success) {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error',
+                        message: 'Failed to create records: ' + result.error,
+                        variant: 'error'
+                    })
+                );
+                return;
+            }
 
-                // Show success message
-                this.showToast('Success', 'Corporate travel account created successfully!', 'success');
+            this.accountRecordId = result.accountId;
 
-                // Dispatch success event
-                const successEvent = new CustomEvent('accountcreated', {
-                    detail: {
-                        action,
-                        accountId: result.accountId,
-                        accountName: this.companyName
+            // Upload files - EXACT SAME AS ORIGINAL
+            await this.uploadAllFilesToAccount(result.accountId);
+
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Corporate travel account created successfully!',
+                    variant: 'success'
+                })
+            );
+
+            // Dispatch success event to parent
+            const successEvent = new CustomEvent('accountcreated', {
+                detail: {
+                    action,
+                    accountId: result.accountId,
+                    accountName: this.companyName
+                }
+            });
+            this.dispatchEvent(successEvent);
+
+            // Navigation based on action
+            if (action === 'close') {
+                this.handleClose();
+            } else {
+                // Navigate to booking creation
+                this[NavigationMixin.Navigate]({
+                    type: 'standard__navItemPage',
+                    attributes: {
+                        apiName: 'Travel_Booking_Dashboard'
                     }
                 });
-                this.dispatchEvent(successEvent);
-
-                // Close modal or navigate
-                if (action === 'close') {
-                    this.handleClose();
-                } else {
-                    // Navigate to booking creation
-                    this[NavigationMixin.Navigate]({
-                        type: 'standard__component',
-                        attributes: {
-                            componentName: 'c__travelBookingWizard'
-                        },
-                        state: {
-                            accountId: result.accountId
-                        }
-                    });
-                }
-            } else {
-                throw new Error(result.error || 'Failed to create account');
             }
+
         } catch (error) {
-            this.showToast('Error', error.message, 'error');
+            console.error('Error creating records or uploading files:', error);
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Failed to create account: ' + (error.body && error.body.message ? error.body.message : error.message),
+                    variant: 'error'
+                })
+            );
         } finally {
             this.isLoading = false;
         }
     }
 
-    async uploadFiles() {
-        // Upload files for each category
-        const categories = ['travelPolicy', 'agreement', 'employee'];
-        
-        for (const category of categories) {
-            const files = this.selectedFiles[category] || [];
+    // Upload Files - EXACT SAME AS ORIGINAL
+    async uploadAllFilesToAccount(accountId) {
+        for (const category of Object.keys(this.selectedFiles)) {
+            const files = this.selectedFiles[category];
             for (const file of files) {
-                try {
-                    const base64Data = await this.convertFileToBase64(file);
-                    await uploadFileToAccount({
-                        parentId: this.accountRecordId,
-                        fileName: file.name,
-                        base64Data: base64Data.split(',')[1], // Remove data URL prefix
-                        contentType: file.type
-                    });
-                } catch (error) {
-                    console.error('File upload error:', error);
-                }
+                const base64 = await this.readFileAsBase64(file);
+                await uploadFileToAccount({
+                    parentId: accountId,
+                    fileName: file.name,
+                    base64Data: base64,
+                    contentType: file.type
+                });
             }
         }
     }
 
-    convertFileToBase64(file) {
+    readFileAsBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+            };
             reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
         });
     }
 
-    // Validation
-    validateCurrentStep() {
-        const currentStepNum = parseInt(this.currentStep, 10);
-        
-        switch (currentStepNum) {
-            case 1:
-                return this.validateStep1();
-            case 2:
-                return this.validateStep2();
-            case 3:
-                return this.validateStep3();
-            case 4:
-                return this.validateStep4();
-            default:
-                return true;
-        }
+    // Formatted Date Properties - EXACT SAME AS ORIGINAL
+    get formattedAgreementStartDate() {
+        if (!this.agreementStartDate) return '';
+        const date = new Date(this.agreementStartDate);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
     }
 
-    validateStep1() {
-        if (!this.companyName || !this.businessDivision || !this.contactFirstName || !this.contactLastName || !this.contactEmail) {
-            this.showToast('Validation Error', 'Please fill in all required fields', 'error');
-            return false;
-        }
-        return true;
-    }
-
-    validateStep2() {
-        // Add specific validations for travel preferences if needed
-        return true;
-    }
-
-    validateStep3() {
-        // Add specific validations for service agreement if needed
-        return true;
-    }
-
-    validateStep4() {
-        // Add specific validations for team setup if needed
-        return true;
-    }
-
-    validateAllSteps() {
-        return this.validateStep1() && this.validateStep2() && this.validateStep3() && this.validateStep4();
-    }
-
-    // Utility Methods
-    showToast(title, message, variant = 'info') {
-        const event = new ShowToastEvent({
-            title,
-            message,
-            variant
-        });
-        this.dispatchEvent(event);
+    get formattedAgreementEndDate() {
+        if (!this.agreementEndDate) return '';
+        const date = new Date(this.agreementEndDate);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
     }
 }

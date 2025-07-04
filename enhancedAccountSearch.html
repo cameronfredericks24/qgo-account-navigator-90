@@ -1,160 +1,226 @@
+<!-- Enhanced Account Search with Salesforce Integration -->
 <template>
-    <!-- Enhanced Account Search Component with Travel Industry UX -->
-    <div class="slds-card slds-card_boundary">
-        <!-- Search Header with Visual Identity -->
-        <header class="slds-card__header slds-grid slds-grid_align-spread slds-p-around_medium" style="background: linear-gradient(135deg, #1589ee 0%, #0d9488 100%); color: white;">
-            <div class="slds-media slds-media_center">
-                <div class="slds-media__figure">
-                    <lightning-icon icon-name="standard:account" size="large" class="slds-icon_inverse"></lightning-icon>
+    <!-- Account Success Notification -->
+    <template if:true={showAccountCreatedSuccess}>
+        <div class="account-search-outer" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; margin-bottom: 1rem;">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div class="slds-col">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="utility:success" size="small" class="slds-icon_inverse"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h3 class="slds-text-heading_small">Account Created Successfully!</h3>
+                            <p class="slds-text-body_small" style="opacity: 0.9;">
+                                The corporate travel account has been created. You can now search for it or create bookings.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="slds-media__body">
-                    <h1 class="slds-card__header-title slds-text-heading_large">
-                        Corporate Account Explorer
-                    </h1>
-                    <p class="slds-text-body_regular slds-m-top_xx-small" style="opacity: 0.9;">
-                        Discover and manage your travel partnership accounts with intelligent search
-                    </p>
+                <div class="slds-col slds-no-flex">
+                    <lightning-button 
+                        variant="brand-outline" 
+                        label="Create Booking" 
+                        icon-name="utility:event"
+                        onclick={handleBookNewAccount}
+                        class="slds-button_inverse slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button-icon 
+                        icon-name="utility:close" 
+                        variant="bare-inverse" 
+                        onclick={hideSuccessMessage}
+                        alternative-text="Close">
+                    </lightning-button-icon>
                 </div>
             </div>
-            <div class="slds-no-flex">
+        </div>
+    </template>
+
+    <!-- Enhanced Account Search Component -->
+    <div class="account-search-outer">
+        <!-- Enhanced Header with Corporate Travel Branding -->
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_medium">
+            <div class="slds-col">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <div class="slds-icon_container slds-icon-standard-account" style="background: linear-gradient(135deg, #1589ee 0%, #0d9488 100%);">
+                            <lightning-icon icon-name="standard:account" size="medium" class="slds-icon_inverse"></lightning-icon>
+                        </div>
+                    </div>
+                    <div class="slds-media__body">
+                        <h1 class="account-search-label">Corporate Travel Accounts</h1>
+                        <p class="slds-text-body_small slds-text-color_weak">Search and manage your travel partnership accounts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-no-flex">
                 <lightning-button 
-                    variant="brand-outline" 
+                    variant="brand" 
                     label="Create New Account" 
                     icon-name="utility:add"
                     onclick={handleCreateAccount}
-                    class="slds-button_inverse">
+                    class="slds-m-right_small">
                 </lightning-button>
             </div>
-        </header>
+        </div>
 
-        <!-- Smart Search and Filters Panel -->
-        <div class="slds-card__body slds-card__body_inner">
-            <!-- Advanced Search Section -->
-            <div class="slds-section slds-is-open slds-m-bottom_large">
-                <h3 class="slds-section__title slds-theme_shade">
-                    <span class="slds-truncate slds-p-horizontal_small">
-                        <lightning-icon icon-name="utility:search" size="x-small" class="slds-m-right_x-small"></lightning-icon>
-                        Intelligent Search & Filters
+        <!-- Integrated Account Search with existing functionality -->
+        <div class="account-search-box">
+            <!-- Use existing account search component structure -->
+            <template if:true={selectedAccount}>
+                <div class="account-pill">
+                    <span class="account-pill-label">{selectedAccount.Name}</span>
+                    <button class="account-pill-remove" title="Remove" onclick={clearSelection}>
+                        <lightning-icon icon-name="utility:close" size="x-small" class="account-pill-remove-icon"></lightning-icon>
+                    </button>
+                </div>
+            </template>
+            
+            <template if:false={selectedAccount}>
+                <div class="account-search-input-wrapper">
+                    <!-- Enhanced search input maintaining original functionality -->
+                    <input
+                        type="search"
+                        value={searchTerm}
+                        oninput={handleInputChange}
+                        onfocus={handleInputFocus}
+                        placeholder="Search corporate accounts..."
+                        class="account-search-input-native"
+                        autocomplete="off"
+                        aria-label="Search Corporate Accounts"
+                    />
+                    <span class="account-search-icon">
+                        <lightning-icon icon-name="utility:search" size="x-small" class="account-search-icon-svg"></lightning-icon>
                     </span>
-                </h3>
-                
-                <!-- Search Input with Enhanced UX -->
-                <div class="slds-section__content slds-p-around_medium">
-                    <div class="slds-grid slds-gutters slds-wrap">
-                        <!-- Primary Search -->
-                        <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12">
-                            <div class="slds-form-element">
-                                <label class="slds-form-element__label" for="primary-search">
-                                    <span class="slds-required">*</span>Search Accounts
-                                </label>
-                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
-                                    <lightning-icon icon-name="utility:search" size="x-small" class="slds-input__icon slds-input__icon_left"></lightning-icon>
-                                    <input 
-                                        type="search" 
-                                        id="primary-search"
-                                        class="slds-input" 
-                                        placeholder="Company name, contact, or industry..."
-                                        value={searchTerm}
-                                        oninput={handleSearchInput}
-                                        onfocus={handleSearchFocus} />
-                                </div>
-                                <template if:true={isSearching}>
-                                    <div class="slds-form-element__help">
-                                        <lightning-spinner size="x-small" class="slds-m-right_x-small"></lightning-spinner>
-                                        Searching accounts...
-                                    </div>
+                    
+                    <!-- Enhanced dropdown with travel-specific data -->
+                    <template if:true={showDropdown}>
+                        <div class="account-search-dropdown" role="listbox" data-show="true">
+                            <ul class="account-search-listbox" role="presentation">
+                                <template if:true={accounts.length}>
+                                    <template for:each={accounts} for:item="account">
+                                        <li key={account.Id} role="presentation" class="account-search-listbox-item">
+                                            <div class="account-search-option enhanced-option"
+                                                role="option"
+                                                data-id={account.Id}
+                                                data-name={account.Name}
+                                                onclick={handleSelect}>
+                                                
+                                                <!-- Enhanced account display with travel info -->
+                                                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center" style="width: 100%;">
+                                                    <div class="slds-col">
+                                                        <div class="slds-media slds-media_small">
+                                                            <div class="slds-media__figure">
+                                                                <div class="slds-icon_container slds-icon-standard-account slds-icon_small">
+                                                                    <lightning-icon icon-name="standard:account" size="x-small"></lightning-icon>
+                                                                </div>
+                                                            </div>
+                                                            <div class="slds-media__body">
+                                                                <span class="account-search-option-label slds-text-body_regular">{account.Name}</span>
+                                                                <div class="slds-text-body_small slds-text-color_weak">
+                                                                    <template if:true={account.Industry}>
+                                                                        {account.Industry} • 
+                                                                    </template>
+                                                                    <template if:true={account.Travel_Volume__c}>
+                                                                        {account.Travel_Volume__c} trips/month
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-col slds-no-flex">
+                                                        <template if:true={account.Preferred_Class__c}>
+                                                            <span class="slds-badge slds-badge_lightest slds-text-body_small">
+                                                                {account.Preferred_Class__c}
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </template>
                                 </template>
-                            </div>
+                                <template if:false={accounts.length}>
+                                    <li class="account-search-listbox-item">
+                                        <span class="account-search-no-results">No corporate travel accounts found</span>
+                                    </li>
+                                </template>
+                            </ul>
                         </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+        
+        <!-- Error display -->
+        <template if:true={error}>
+            <div class="account-search-error">{error}</div>
+        </template>
 
-                        <!-- Industry Filter -->
-                        <div class="slds-col slds-size_1-of-2 slds-large-size_2-of-12">
-                            <div class="slds-form-element">
-                                <label class="slds-form-element__label" for="industry-filter">Industry Focus</label>
-                                <div class="slds-form-element__control">
-                                    <lightning-combobox
-                                        name="industry"
-                                        label=""
-                                        value={industryFilter}
-                                        placeholder="All Industries"
-                                        options={industryOptions}
-                                        onchange={handleFilterChange}
-                                        data-field="industry">
-                                    </lightning-combobox>
-                                </div>
-                            </div>
+        <!-- Enhanced Account Details Section -->
+        <template if:true={selectedAccount}>
+            <div class="slds-card slds-card_boundary slds-m-top_medium">
+                <header class="slds-card__header">
+                    <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
                         </div>
-
-                        <!-- Status Filter -->
-                        <div class="slds-col slds-size_1-of-2 slds-large-size_2-of-12">
-                            <div class="slds-form-element">
-                                <label class="slds-form-element__label" for="status-filter">Account Status</label>
-                                <div class="slds-form-element__control">
-                                    <lightning-combobox
-                                        name="status"
-                                        label=""
-                                        value={statusFilter}
-                                        placeholder="All Status"
-                                        options={statusOptions}
-                                        onchange={handleFilterChange}
-                                        data-field="status">
-                                    </lightning-combobox>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sort Options -->
-                        <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12">
-                            <div class="slds-form-element">
-                                <label class="slds-form-element__label" for="sort-options">Sort Results</label>
-                                <div class="slds-form-element__control">
-                                    <lightning-combobox
-                                        name="sort"
-                                        label=""
-                                        value={sortBy}
-                                        placeholder="Sort by..."
-                                        options={sortOptions}
-                                        onchange={handleFilterChange}
-                                        data-field="sort">
-                                    </lightning-combobox>
-                                </div>
-                            </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                Selected Corporate Account
+                            </h2>
                         </div>
                     </div>
-
-                    <!-- Quick Filter Chips -->
-                    <div class="slds-m-top_medium">
-                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-                            <div class="slds-col">
-                                <span class="slds-text-body_small slds-text-color_weak slds-m-right_small">Quick Filters:</span>
-                                <lightning-pill 
-                                    label="Active Partnerships" 
-                                    onclick={handleQuickFilter} 
-                                    data-filter="active"
-                                    class="slds-m-right_x-small">
-                                </lightning-pill>
-                                <lightning-pill 
-                                    label="High Travel Volume" 
-                                    onclick={handleQuickFilter} 
-                                    data-filter="high-volume"
-                                    class="slds-m-right_x-small">
-                                </lightning-pill>
-                                <lightning-pill 
-                                    label="Recent Activity" 
-                                    onclick={handleQuickFilter} 
-                                    data-filter="recent"
-                                    class="slds-m-right_x-small">
-                                </lightning-pill>
-                            </div>
-                            <div class="slds-col slds-no-flex">
-                                <span class="slds-badge slds-theme_info">
-                                    {filteredAccountCount} accounts found
-                                </span>
-                            </div>
+                </header>
+                <div class="slds-card__body slds-card__body_inner">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12">
+                            <dl class="slds-list_horizontal slds-wrap">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate">Company:</dt>
+                                <dd class="slds-item_detail slds-truncate">{selectedAccount.Name}</dd>
+                                <template if:true={selectedAccount.Industry}>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Industry:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{selectedAccount.Industry}</dd>
+                                </template>
+                            </dl>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_6-of-12">
+                            <dl class="slds-list_horizontal slds-wrap">
+                                <template if:true={selectedAccount.Travel_Volume__c}>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Travel Volume:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{selectedAccount.Travel_Volume__c}</dd>
+                                </template>
+                                <template if:true={selectedAccount.Preferred_Class__c}>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Preferred Class:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{selectedAccount.Preferred_Class__c}</dd>
+                                </template>
+                            </dl>
                         </div>
                     </div>
                 </div>
+                <footer class="slds-card__footer">
+                    <div class="slds-grid slds-grid_align-spread">
+                        <div class="slds-col">
+                            <lightning-button 
+                                variant="neutral" 
+                                label="Clear Selection" 
+                                icon-name="utility:clear"
+                                onclick={clearSelection}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-col slds-no-flex">
+                            <lightning-button 
+                                variant="brand" 
+                                label="Create Travel Booking" 
+                                icon-name="utility:event"
+                                onclick={handleCreateBooking}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </footer>
             </div>
+        </template>
+    </div>
 
             <!-- Results Section with Enhanced Cards -->
             <div class="slds-section slds-is-open">
