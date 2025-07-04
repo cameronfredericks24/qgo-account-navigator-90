@@ -3,280 +3,367 @@
         <div class="slds-modal slds-fade-in-open" style="display:block;">
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
-                    <h2 class="slds-modal__title">Quote Details</h2>
+                    <h2 class="slds-modal__title">Booking Quote Details</h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium">
-                    <c-quote-details-component record-id={createdBookingId}></c-quote-details-component>
+                    <c-booking-details record-id={createdBookingId}></c-booking-details>
                 </div>
                 <footer class="slds-modal__footer">
-                    <lightning-button label="Back" onclick={handleBackToBooking} class="slds-m-right_small"></lightning-button>
-                    <lightning-button label="Close" onclick={handleClose} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Back to Booking" onclick={handleBackToBooking} class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Confirm Booking" onclick={handleConfirmBooking} variant="brand" class="slds-m-right_small"></lightning-button>
+                    <lightning-button label="Close" onclick={handleClose}></lightning-button>
                 </footer>
             </div>
         </div>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
+    
     <template if:false={showQuoteDetails}>
         <div class="slds-modal slds-fade-in-open" style="display:block;">
-            <div class="slds-modal__container">
+            <div class="slds-modal__container" style="max-width: 900px; width: 95vw;">
                 <header class="slds-modal__header">
-                    <h2 class="slds-modal__title">Travel Booking Wizard</h2>
+                    <h2 class="slds-modal__title">Enhanced Travel Booking Wizard</h2>
                 </header>
+                
+                <!-- Progress Indicator for Booking -->
                 <div class="slds-p-around_small slds-theme_shade">
                     <template if:true={isBookingWizard}>
                         <lightning-progress-indicator current-step={currentStep} type="path" variant="base">
+                            <lightning-progress-step label="Account" value="0"></lightning-progress-step>
                             <lightning-progress-step label="Overview" value="1"></lightning-progress-step>
                             <lightning-progress-step label="Flight Info" value="2"></lightning-progress-step>
                             <lightning-progress-step label="Hotel" value="3"></lightning-progress-step>
-                            <lightning-progress-step label="Visa" value="4"></lightning-progress-step>
-                            <lightning-progress-step label="Transport" value="5"></lightning-progress-step>
+                            <lightning-progress-step label="Visa & Transport" value="4"></lightning-progress-step>
+                            <lightning-progress-step label="Review" value="5"></lightning-progress-step>
                         </lightning-progress-indicator>
                     </template>
                 </div>
+                
                 <div class="slds-modal__content slds-p-around_medium">
-                    <!-- Step: Account Selection (Mandatory) -->
+                    <!-- Step 0: Account Selection -->
                     <template if:true={isAccountSelectionStep}>
-                        <h3 class="slds-text-heading_small slds-m-bottom_medium">Please select a Corporate Account to proceed</h3>
-                        <div class="slds-grid slds-gutters slds-m-bottom_large" style="align-items: flex-end;">
-                            <div class="slds-col slds-size_2-of-3">
-                                <c-account-search 
-                                    label="Corporate Account *" 
-                                    onaccountselected={handleAccountSelected}>
-                                </c-account-search>
+                        <div class="slds-section slds-is-open">
+                            <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                                <lightning-icon icon-name="standard:account" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                Select Corporate Account
+                            </h3>
+                            <p class="slds-text-body_regular slds-m-bottom_medium">Please select a corporate account to proceed with the booking</p>
+                            
+                            <div class="slds-grid slds-gutters slds-m-bottom_large" style="align-items: flex-end;">
+                                <div class="slds-col slds-size_2-of-3">
+                                    <c-enhanced-account-search 
+                                        label="Corporate Account *" 
+                                        onaccountselected={handleAccountSelected}
+                                        oncreateaccount={handleCreateAccount}>
+                                    </c-enhanced-account-search>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3 slds-text-align_right">
+                                    <lightning-button 
+                                        label="Continue to Booking" 
+                                        variant="brand" 
+                                        onclick={handleAccountContinue} 
+                                        disabled={isAccountContinueDisabled}
+                                        class="slds-m-left_small">
+                                    </lightning-button>
+                                </div>
                             </div>
-                            <div class="slds-col slds-size_1-of-3 slds-text-align_right">
-                                <lightning-button 
-                                    label="Continue" 
-                                    variant="brand" 
-                                    onclick={handleAccountContinue} 
-                                    disabled={isAccountContinueDisabled}>
-                                </lightning-button>
-                            </div>
-                        </div>
-                        <div class="slds-text-color_error slds-m-bottom_medium" if:true={showAccountError}>
-                            Please select a Corporate Account to continue.
+                            
+                            <template if:true={showAccountError}>
+                                <div class="slds-text-color_error slds-m-bottom_medium">
+                                    <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                    Please select a Corporate Account to continue.
+                                </div>
+                            </template>
                         </div>
                     </template>
                     
                     <!-- Booking Wizard Pages -->
                     <template if:true={isBookingWizard}>
-                        <!-- Booking Page 1: Booking Overview & Passenger Details -->
+                        <!-- Page 1: Booking Overview & Passenger Details -->
                         <template if:true={isBookingPage1}>
                             <div class="slds-section slds-is-open">
                                 <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
                                     <lightning-icon icon-name="standard:orders" size="small" class="slds-m-right_x-small"></lightning-icon>
                                     Booking Overview
                                 </h3>
-                            <lightning-input label="Booking Name" value={bookingName} disabled></lightning-input>
-                            <lightning-input label="Corporate Account" value={bookingCorporateAccount} disabled></lightning-input>
-                            <lightning-input label="Primary Contact" value={bookingPrimaryContact} disabled></lightning-input>
-                            <!-- <lightning-combobox label="Employee Name" value={bookingEmployeeName} options={employeeNameOptions} onchange={handleBookingInputChange} data-id="bookingEmployeeName"></lightning-combobox>
-                            <lightning-input label="Employee Email" value={bookingEmployeeEmail} disabled></lightning-input>
-                            <lightning-input label="Employee Phone" value={bookingEmployeePhone} onchange={handleBookingInputChange} data-id="bookingEmployeePhone"></lightning-input> -->
-                            <lightning-input type="number" label="Number of Passengers" value={bookingNumPassengers} onchange={handleBookingInputChange} data-id="bookingNumPassengers"></lightning-input>
-                            <lightning-combobox label="Urgency Level" value={bookingUrgencyLevel} options={urgencyLevelOptions} onchange={handleBookingInputChange} data-id="bookingUrgencyLevel"></lightning-combobox>
-                            <lightning-combobox label="Purpose of Travel" value={bookingPurposeOfTravel} options={bookingPurposeOfTravelOptions} onchange={handleBookingInputChange} data-id="bookingPurposeOfTravel"></lightning-combobox>
-                            <lightning-checkbox-group label="Booking Type" options={bookingTypeOptions} value={bookingType} onchange={handleBookingInputChange} data-id="bookingType"></lightning-checkbox-group>
-                            <lightning-input label="Budget Limit per trip" value={bookingBudgetLimit} onchange={handleBookingInputChange} data-id="bookingBudgetLimit"></lightning-input>
-                            <lightning-textarea label="Remarks" value={bookingRemarks} onchange={handleBookingInputChange} data-id="bookingRemarks"></lightning-textarea>
-
-                            <!-- Account Preferences Section -->
-                            <h3 class="slds-text-heading_small slds-m-top_medium slds-m-bottom_small">Account Preferences</h3>
-                            <div class="slds-grid slds-gutters slds-m-bottom_small">
-                                <div class="slds-col slds-size_1-of-2 slds-p-right_x-small">
-                                    <lightning-input label="Preferred Airlines" value={accountPreferredAirlines} disabled></lightning-input>
-                                    <lightning-input label="Preferred Class" value={accountPreferredClass} disabled></lightning-input>
-                                    <lightning-input label="Travel Volume" value={accountTravelVolume} disabled></lightning-input>
-                                    <lightning-input label="Max Travel Limit" value={accountMaxTravelLimit} disabled></lightning-input>
+                                
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-input label="Booking Name" value={bookingName} disabled class="enhanced-input"></lightning-input>
+                                        <lightning-input label="Corporate Account" value={bookingCorporateAccount} disabled class="enhanced-input"></lightning-input>
+                                        <lightning-input label="Primary Contact" value={bookingPrimaryContact} disabled class="enhanced-input"></lightning-input>
+                                        <lightning-input type="number" label="Number of Passengers" value={bookingNumPassengers} onchange={handleBookingInputChange} data-id="bookingNumPassengers" min="1" required class="enhanced-input"></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-combobox label="Urgency Level" value={bookingUrgencyLevel} options={urgencyLevelOptions} onchange={handleBookingInputChange} data-id="bookingUrgencyLevel"></lightning-combobox>
+                                        <lightning-combobox label="Purpose of Travel" value={bookingPurposeOfTravel} options={bookingPurposeOfTravelOptions} onchange={handleBookingInputChange} data-id="bookingPurposeOfTravel"></lightning-combobox>
+                                        <lightning-checkbox-group label="Booking Type" options={bookingTypeOptions} value={bookingType} onchange={handleBookingInputChange} data-id="bookingType"></lightning-checkbox-group>
+                                        <lightning-input label="Budget Limit per trip" value={bookingBudgetLimit} onchange={handleBookingInputChange} data-id="bookingBudgetLimit" type="currency"></lightning-input>
+                                    </div>
                                 </div>
-                                <div class="slds-col slds-size_1-of-2 slds-p-left_x-small">
-                                    <lightning-input label="Red-eye Flights Allowed" value={accountRedEyeAllowed} disabled></lightning-input>
-                                    <lightning-input label="Advance Booking Window" value={accountAdvanceBookingWindow} disabled></lightning-input>
-                                    <lightning-input label="Hotel Category" value={accountHotelCategory} disabled></lightning-input>
-                                    <lightning-input label="Visa Assistance Required" value={accountVisaAssistance} disabled></lightning-input>
+                                
+                                <lightning-textarea label="Special Remarks" value={bookingRemarks} onchange={handleBookingInputChange} data-id="bookingRemarks" rows="3"></lightning-textarea>
+                            </div>
+
+                            <!-- Account Preferences Display -->
+                            <div class="slds-section slds-is-open">
+                                <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                                    <lightning-icon icon-name="standard:settings" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Account Travel Preferences (Read-Only)
+                                </h3>
+                                
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-input label="Preferred Airlines" value={accountPreferredAirlines} disabled></lightning-input>
+                                        <lightning-input label="Preferred Class" value={accountPreferredClass} disabled></lightning-input>
+                                        <lightning-input label="Red-eye Flights Allowed" value={accountRedEyeAllowed} disabled></lightning-input>
+                                        <lightning-input label="Hotel Category" value={accountHotelCategory} disabled></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-input label="Travel Volume" value={accountTravelVolume} disabled></lightning-input>
+                                        <lightning-input label="Max Travel Limit" value={accountMaxTravelLimit} disabled></lightning-input>
+                                        <lightning-input label="Advance Booking Window" value={accountAdvanceBookingWindow} disabled></lightning-input>
+                                        <lightning-input label="Visa Assistance" value={accountVisaAssistance} disabled></lightning-input>
+                                    </div>
                                 </div>
                             </div>
 
-                            <h3 class="slds-text-heading_small slds-m-top_medium slds-m-bottom_small">Passenger Details</h3>
-                            <template for:each={passengerList} for:item="passenger" for:index="index">
-                                <div key={passenger.id} class="slds-box slds-m-bottom_small">
-                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
-                                        <h4 class="slds-text-heading_small">Passenger</h4>
-                                        <lightning-button 
-                                            label="Remove Passenger" 
-                                            variant="destructive" 
-                                            onclick={handleRemovePassenger} 
-                                            data-index={index}
-                                            disabled={isRemovePassengerDisabled}>
-                                        </lightning-button>
+                            <!-- Dynamic Passenger Details -->
+                            <div class="slds-section slds-is-open">
+                                <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                                    <lightning-icon icon-name="standard:contact" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Passenger Details
+                                </h3>
+                                
+                                <template for:each={passengerList} for:item="passenger" for:index="index">
+                                    <div key={passenger.id} class="slds-card slds-m-bottom_medium">
+                                        <div class="slds-card__header slds-grid slds-grid_align-spread">
+                                            <h4 class="slds-card__header-title">Passenger {passenger.displayNumber}</h4>
+                                            <template if:false={isRemovePassengerDisabled}>
+                                                <lightning-button 
+                                                    label="Remove" 
+                                                    variant="destructive-text" 
+                                                    onclick={handleRemovePassenger} 
+                                                    data-index={index}
+                                                    size="small">
+                                                </lightning-button>
+                                            </template>
+                                        </div>
+                                        <div class="slds-card__body slds-p-around_medium">
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-3">
+                                                    <lightning-input label="First Name" value={passenger.firstName} onchange={handlePassengerChange} data-index={index} data-field="firstName" required></lightning-input>
+                                                    <lightning-input label="Last Name" value={passenger.lastName} onchange={handlePassengerChange} data-index={index} data-field="lastName" required></lightning-input>
+                                                    <lightning-input label="Designation" value={passenger.designation} onchange={handlePassengerChange} data-index={index} data-field="designation"></lightning-input>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-3">
+                                                    <lightning-input label="Email ID" value={passenger.email} onchange={handlePassengerChange} data-index={index} data-field="email" type="email" required></lightning-input>
+                                                    <lightning-input label="Mobile Number" value={passenger.mobile} onchange={handlePassengerChange} data-index={index} data-field="mobile" type="tel"></lightning-input>
+                                                    <lightning-input label="Passport Number" value={passenger.passportNumber} onchange={handlePassengerChange} data-index={index} data-field="passportNumber"></lightning-input>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-3">
+                                                    <lightning-input type="date" label="Passport Expiry" value={passenger.passportExpiry} onchange={handlePassengerChange} data-index={index} data-field="passportExpiry"></lightning-input>
+                                                    <lightning-combobox label="Meal Preference" value={passenger.mealPreference} options={mealPreferenceOptions} onchange={handlePassengerChange} data-index={index} data-field="mealPreference"></lightning-combobox>
+                                                    <lightning-combobox label="Seat Preference" value={passenger.seatPreference} options={flightSeatPreferenceOptions} onchange={handlePassengerChange} data-index={index} data-field="seatPreference"></lightning-combobox>
+                                                </div>
+                                            </div>
+                                            <lightning-combobox label="Flight Class" value={passenger.flightClass} options={flightClassOptions} onchange={handlePassengerChange} data-index={index} data-field="flightClass" class="slds-m-top_small"></lightning-combobox>
+                                            <lightning-textarea label="Special Remarks" value={passenger.remarks} onchange={handlePassengerChange} data-index={index} data-field="remarks" rows="2" class="slds-m-top_small"></lightning-textarea>
+                                        </div>
                                     </div>
-                                    <lightning-input label="First Name" value={passenger.firstName} onchange={handlePassengerChange} data-index={index} data-field="firstName"></lightning-input>
-                                    <lightning-input label="Last Name" value={passenger.lastName} onchange={handlePassengerChange} data-index={index} data-field="lastName"></lightning-input>
-                                    <lightning-input label="Designation" value={passenger.designation} onchange={handlePassengerChange} data-index={index} data-field="designation"></lightning-input>
-                                    <lightning-input label="Email ID" value={passenger.email} onchange={handlePassengerChange} data-index={index} data-field="email"></lightning-input>
-                                    <lightning-input label="Mobile Number" value={passenger.mobile} onchange={handlePassengerChange} data-index={index} data-field="mobile"></lightning-input>
-                                    <lightning-input label="Passport Number" value={passenger.passportNumber} onchange={handlePassengerChange} data-index={index} data-field="passportNumber"></lightning-input>
-                                    <lightning-input type="date" label="Passport Expiry Date" value={passenger.passportExpiry} onchange={handlePassengerChange} data-index={index} data-field="passportExpiry"></lightning-input>
-                                    <lightning-combobox label="Meal Preference" value={passenger.mealPreference} options={mealPreferenceOptions} onchange={handlePassengerChange} data-index={index} data-field="mealPreference"></lightning-combobox>
-                                    <lightning-combobox label="Seat Preference" value={passenger.seatPreference} options={flightSeatPreferenceOptions} onchange={handlePassengerChange} data-index={index} data-field="seatPreference"></lightning-combobox>
-                                    <lightning-combobox label="Flight Class" value={passenger.flightClass} options={flightClassOptions} onchange={handlePassengerChange} data-index={index} data-field="flightClass"></lightning-combobox>
-                                    <lightning-textarea label="Remarks" value={passenger.remarks} onchange={handlePassengerChange} data-index={index} data-field="remarks"></lightning-textarea>
-                                </div>
-                            </template>
-                            <lightning-button label="Add Passenger" onclick={handleAddPassenger} class="slds-m-top_small"></lightning-button>
+                                </template>
+                                
+                                <lightning-button label="Add Another Passenger" onclick={handleAddPassenger} variant="neutral" icon-name="utility:add" class="slds-m-top_small"></lightning-button>
                             </div>
                         </template>
 
-                        <!-- Booking Page 2: Traveler Flight Information -->
+                        <!-- Page 2: Flight Information -->
                         <template if:true={isBookingPage2}>
                             <div class="slds-section slds-is-open">
                                 <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
                                     <lightning-icon icon-name="standard:travel_mode" size="small" class="slds-m-right_x-small"></lightning-icon>
-                                    Traveler Flight Information
+                                    Flight Information
                                 </h3>
-                            <lightning-combobox label="Departure City" value={flightDepartureCity} options={departureCityOptions} onchange={handleBookingInputChange} data-id="flightDepartureCity"></lightning-combobox>
-                            <lightning-combobox label="Destination City" value={flightDestinationCity} options={destinationCityOptions} onchange={handleBookingInputChange} data-id="flightDestinationCity"></lightning-combobox>
-                            <lightning-input type="datetime" label="Departure Date & Time" value={flightDepartureDateTime} onchange={handleBookingInputChange} data-id="flightDepartureDateTime"></lightning-input>
-                            <lightning-radio-group label="Return Trip Required" options={yesNoOptions} value={flightReturnTripRequired} onchange={handleBookingInputChange} data-id="flightReturnTripRequired"></lightning-radio-group>
-                            <template if:true={showReturnDateTime}>
-                                <lightning-input type="datetime" label="Return Date & Time" value={flightReturnDateTime} onchange={handleBookingInputChange} data-id="flightReturnDateTime"></lightning-input>
-                            </template>
-                            <!-- <lightning-combobox label="Flight Class" value={flightClass} options={flightClassOptions} onchange={handleBookingInputChange} data-id="flightClass"></lightning-combobox> -->
-                            <!-- <lightning-combobox label="Seat Preference" value={flightSeatPreference} options={flightSeatPreferenceOptions} onchange={handleBookingInputChange} data-id="flightSeatPreference"></lightning-combobox> -->
-                            <lightning-radio-group label="Luggage Included" options={yesNoOptions} value={flightLuggageIncluded} onchange={handleBookingInputChange} data-id="flightLuggageIncluded"></lightning-radio-group>
-                            <lightning-input label="Red-eye Allowed" value={flightRedEyeAllowed} disabled></lightning-input>
-                            <lightning-input label="Preferred Airline" value={flightPreferredAirline} disabled></lightning-input>
+                                
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-combobox label="Departure City" value={flightDepartureCity} options={departureCityOptions} onchange={handleBookingInputChange} data-id="flightDepartureCity" required></lightning-combobox>
+                                        <lightning-combobox label="Destination City" value={flightDestinationCity} options={destinationCityOptions} onchange={handleBookingInputChange} data-id="flightDestinationCity" required></lightning-combobox>
+                                        <lightning-input type="datetime-local" label="Departure Date & Time" value={flightDepartureDateTime} onchange={handleBookingInputChange} data-id="flightDepartureDateTime" required></lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-radio-group label="Return Trip Required" options={yesNoOptions} value={flightReturnTripRequired} onchange={handleBookingInputChange} data-id="flightReturnTripRequired"></lightning-radio-group>
+                                        <template if:true={showReturnDateTime}>
+                                            <lightning-input type="datetime-local" label="Return Date & Time" value={flightReturnDateTime} onchange={handleBookingInputChange} data-id="flightReturnDateTime"></lightning-input>
+                                        </template>
+                                        <lightning-radio-group label="Luggage Included" options={yesNoOptions} value={flightLuggageIncluded} onchange={handleBookingInputChange} data-id="flightLuggageIncluded"></lightning-radio-group>
+                                    </div>
+                                </div>
+                                
+                                <!-- Read-only preferences from account -->
+                                <div class="slds-box slds-theme_shade slds-m-top_medium">
+                                    <h4 class="slds-text-heading_small slds-m-bottom_small">Account Preferences (Applied)</h4>
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input label="Red-eye Flights Allowed" value={flightRedEyeAllowed} disabled></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input label="Preferred Airlines" value={flightPreferredAirline} disabled></lightning-input>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </template>
 
-                        <!-- Booking Page 3: Hotel Preferences & Booking -->
+                        <!-- Page 3: Hotel Preferences -->
                         <template if:true={isBookingPage3}>
                             <div class="slds-section slds-is-open">
                                 <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
                                     <lightning-icon icon-name="standard:hotel" size="small" class="slds-m-right_x-small"></lightning-icon>
-                                    Hotel Preferences & Booking
+                                    Hotel Booking & Preferences
                                 </h3>
-                            <lightning-radio-group label="Hotel Required" options={yesNoOptions} value={hotelRequired} onchange={handleBookingInputChange} data-id="hotelRequired"></lightning-radio-group>
-                            <template if:true={showHotelFields}>
-                                <lightning-input label="City" value={hotelCity} disabled></lightning-input>
-                                <lightning-input type="datetime" label="Check-in Date & Time" value={hotelCheckIn} onchange={handleBookingInputChange} data-id="hotelCheckIn"></lightning-input>
-                                <lightning-input type="datetime" label="Check-out Date & Time" value={hotelCheckOut} onchange={handleBookingInputChange} data-id="hotelCheckOut"></lightning-input>
-                                <lightning-combobox label="Hotel Category" value={hotelCategory} options={hotelCategoryOptions} onchange={handleBookingInputChange} data-id="hotelCategory"></lightning-combobox>
-                                <lightning-combobox label="Room Type" value={hotelRoomType} options={roomTypeOptions} onchange={handleBookingInputChange} data-id="hotelRoomType"></lightning-combobox>
-                                <lightning-combobox label="Meal Preference" value={hotelMealPreference} options={mealPreferenceOptions} onchange={handleBookingInputChange} data-id="hotelMealPreference"></lightning-combobox>
-                                <lightning-combobox label="Smoking Preference" value={hotelSmokingPreference} options={smokingPreferenceOptions} onchange={handleBookingInputChange} data-id="hotelSmokingPreference"></lightning-combobox>
-                                <lightning-textarea label="Special Request" value={hotelSpecialRequest} onchange={handleBookingInputChange} data-id="hotelSpecialRequest"></lightning-textarea>
-                            </template>
+                                
+                                <lightning-radio-group label="Hotel Required?" options={yesNoOptions} value={hotelRequired} onchange={handleBookingInputChange} data-id="hotelRequired" class="slds-m-bottom_medium"></lightning-radio-group>
+                                
+                                <template if:true={showHotelFields}>
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input label="City" value={hotelCity} disabled></lightning-input>
+                                            <lightning-input type="datetime-local" label="Check-in Date & Time" value={hotelCheckIn} onchange={handleBookingInputChange} data-id="hotelCheckIn" required></lightning-input>
+                                            <lightning-input type="datetime-local" label="Check-out Date & Time" value={hotelCheckOut} onchange={handleBookingInputChange} data-id="hotelCheckOut" required></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox label="Hotel Category" value={hotelCategory} options={hotelCategoryOptions} onchange={handleBookingInputChange} data-id="hotelCategory"></lightning-combobox>
+                                            <lightning-combobox label="Room Type" value={hotelRoomType} options={roomTypeOptions} onchange={handleBookingInputChange} data-id="hotelRoomType"></lightning-combobox>
+                                            <lightning-combobox label="Meal Preference" value={hotelMealPreference} options={mealPreferenceOptions} onchange={handleBookingInputChange} data-id="hotelMealPreference"></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <lightning-combobox label="Smoking Preference" value={hotelSmokingPreference} options={smokingPreferenceOptions} onchange={handleBookingInputChange} data-id="hotelSmokingPreference" class="slds-m-top_small"></lightning-combobox>
+                                    <lightning-textarea label="Special Hotel Requests" value={hotelSpecialRequest} onchange={handleBookingInputChange} data-id="hotelSpecialRequest" rows="3" class="slds-m-top_small"></lightning-textarea>
+                                </template>
                             </div>
                         </template>
 
-                        <!-- Booking Page 4: Visa Requirements -->
+                        <!-- Page 4: Visa & Ground Transport -->
                         <template if:true={isBookingPage4}>
+                            <!-- Visa Requirements -->
                             <div class="slds-section slds-is-open">
                                 <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
                                     <lightning-icon icon-name="standard:document" size="small" class="slds-m-right_x-small"></lightning-icon>
                                     Visa Requirements
                                 </h3>
-                            <lightning-radio-group label="Visa Required" options={yesNoOptions} value={visaRequired} onchange={handleBookingInputChange} data-id="visaRequired"></lightning-radio-group>
-                            <template if:true={showVisaFields}>
-                                <lightning-input label="Destination City" value={visaDestinationCity} disabled></lightning-input>
-                                <lightning-combobox label="Type of Visa" value={visaType} options={visaTypeOptions} onchange={handleBookingInputChange} data-id="visaType"></lightning-combobox>
-                                <!-- <lightning-input label="Passport Number" value={visaPassportNumber} onchange={handleBookingInputChange} data-id="visaPassportNumber"></lightning-input> -->
-                                <!-- <lightning-input type="date" label="Passport Expiry Date" value={visaPassportExpiry} onchange={handleBookingInputChange} data-id="visaPassportExpiry"></lightning-input> -->
-                                <!-- <lightning-file-upload label="Passport Document Upload" name="passportFile" accept={acceptedFormats} record-id={recordId} onuploadfinished={handleFileUpload} multiple></lightning-file-upload> -->
-                                <lightning-input type="number" label="Estimated TAT (days)" value={visaEstimatedTAT} onchange={handleBookingInputChange} data-id="visaEstimatedTAT"></lightning-input>
-                                <lightning-input type="checkbox" label="Urgent Visa Required" checked={visaUrgentRequired} onchange={handleBookingInputChange} data-id="visaUrgentRequired"></lightning-input>
-                                <lightning-dual-listbox
-                                    name="visaPassengers"
-                                    label="Select Passengers for Visa"
-                                    source-label="Available Passengers"
-                                    selected-label="Selected Passengers"
-                                    options={passengerPicklistOptions}
-                                    value={visaPassengerList}
-                                    onchange={handleVisaPassengerChange}>
-                                </lightning-dual-listbox>
-                            </template>
+                                
+                                <lightning-radio-group label="Visa Required?" options={yesNoOptions} value={visaRequired} onchange={handleBookingInputChange} data-id="visaRequired"></lightning-radio-group>
+                                
+                                <template if:true={showVisaFields}>
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input label="Destination City" value={visaDestinationCity} disabled></lightning-input>
+                                            <lightning-combobox label="Type of Visa" value={visaType} options={visaTypeOptions} onchange={handleBookingInputChange} data-id="visaType"></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input type="number" label="Estimated TAT (days)" value={visaEstimatedTAT} onchange={handleBookingInputChange} data-id="visaEstimatedTAT"></lightning-input>
+                                            <lightning-input type="currency" label="Visa Fees" value={visaFees} onchange={handleBookingInputChange} data-id="visaFees"></lightning-input>
+                                        </div>
+                                    </div>
+                                    <lightning-textarea label="Visa Special Instructions" value={visaSpecialInstructions} onchange={handleBookingInputChange} data-id="visaSpecialInstructions" rows="2" class="slds-m-top_small"></lightning-textarea>
+                                </template>
+                            </div>
+
+                            <!-- Ground Transport -->
+                            <div class="slds-section slds-is-open slds-m-top_medium">
+                                <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
+                                    <lightning-icon icon-name="standard:transport" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Ground Transport
+                                </h3>
+                                
+                                <lightning-radio-group label="Ground Transport Required?" options={yesNoOptions} value={gtRequired} onchange={handleBookingInputChange} data-id="gtRequired"></lightning-radio-group>
+                                
+                                <template if:true={showGTFields}>
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox label="Pickup Location" value={gtPickupLocation} options={gtLocationOptions} onchange={handleBookingInputChange} data-id="gtPickupLocation"></lightning-combobox>
+                                            <lightning-combobox label="Drop Location" value={gtDropLocation} options={gtLocationOptions} onchange={handleBookingInputChange} data-id="gtDropLocation"></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input type="datetime-local" label="Pickup Date & Time" value={gtPickupDateTime} onchange={handleBookingInputChange} data-id="gtPickupDateTime"></lightning-input>
+                                            <lightning-combobox label="Vehicle Type" value={gtVehicleType} options={gtVehicleTypeOptions} onchange={handleBookingInputChange} data-id="gtVehicleType"></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <lightning-textarea label="Ground Transport Instructions" value={gtSpecialInstructions} onchange={handleBookingInputChange} data-id="gtSpecialInstructions" rows="2" class="slds-m-top_small"></lightning-textarea>
+                                </template>
                             </div>
                         </template>
 
-                        <!-- Booking Page 5: Ground Transport -->
+                        <!-- Page 5: Review & Submit -->
                         <template if:true={isBookingPage5}>
                             <div class="slds-section slds-is-open">
                                 <h3 class="slds-section__title slds-theme_shade slds-p-around_x-small">
-                                    <lightning-icon icon-name="standard:car" size="small" class="slds-m-right_x-small"></lightning-icon>
-                                    Ground Transport
+                                    <lightning-icon icon-name="standard:orders" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    Booking Summary & Review
                                 </h3>
-                            <lightning-radio-group label="Require Ground Transport?" options={yesNoOptions} value={gtRequired} onchange={handleBookingInputChange} data-id="gtRequired"></lightning-radio-group>
-                            <template if:true={showGTFields}>
-                                <lightning-input-address
-                                    address-label="Pickup Location"
-                                    street-label="Street"
-                                    city-label="City"
-                                    country-label="Country"
-                                    province-label="State"
-                                    postal-code-label="Postal Code"
-                                    street={gtPickupStreet}
-                                    city={gtPickupCity}
-                                    country={gtPickupCountry}
-                                    province={gtPickupState}
-                                    postal-code={gtPickupPostalCode}
-                                    onchange={handlePickupAddressChange}
-                                    data-id="gtPickupAddress">
-                                </lightning-input-address>
-                                <lightning-input-address
-                                    address-label="Drop Location"
-                                    street-label="Street"
-                                    city-label="City"
-                                    country-label="Country"
-                                    province-label="State"
-                                    postal-code-label="Postal Code"
-                                    street={gtDropStreet}
-                                    city={gtDropCity}
-                                    country={gtDropCountry}
-                                    province={gtDropState}
-                                    postal-code={gtDropPostalCode}
-                                    onchange={handleDropAddressChange}
-                                    data-id="gtDropAddress">
-                                </lightning-input-address>
-                                <lightning-checkbox-group label="Modes of Transport" options={modesOfTransportOptions} value={gtModesOfTransport} onchange={handleBookingInputChange} data-id="gtModesOfTransport"></lightning-checkbox-group>
-                                <lightning-combobox label="Preferred Vendors" value={gtPreferredVendors} options={preferredVendorsOptions} onchange={handleBookingInputChange} data-id="gtPreferredVendors"></lightning-combobox>
-                                <lightning-input type="datetime" label="Pickup Date & Time" value={gtPickupDateTime} onchange={handleBookingInputChange} data-id="gtPickupDateTime"></lightning-input>
-                                <lightning-textarea label="Remarks" value={gtRemarks} onchange={handleBookingInputChange} data-id="gtRemarks"></lightning-textarea>
-                            </template>
-                            
-                            <!-- Save & Continue button for the last page -->
-                            <div class="slds-m-top_large slds-text-align_center">
-                                <lightning-button 
-                                    label="Save & Continue" 
-                                    variant="brand" 
-                                    onclick={handleSaveAndContinue}
-                                    class="slds-m-right_small">
-                                </lightning-button>
-
-                                <lightning-button 
-                                    label="Save & Create Quote" 
-                                    variant="success" 
-                                    onclick={handleSaveAndCreateQuote}>
-                                </lightning-button>
-
-                                 <div class="modal-content"></div>
-                            </div>
+                                
+                                <!-- Booking Summary Display -->
+                                <div class="slds-box slds-theme_default">
+                                    <h4 class="slds-text-heading_small slds-m-bottom_medium">Review Your Booking Details</h4>
+                                    
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <dl class="slds-list_horizontal">
+                                                <dt class="slds-item_label">Account:</dt>
+                                                <dd class="slds-item_detail">{bookingCorporateAccount}</dd>
+                                                <dt class="slds-item_label">Passengers:</dt>
+                                                <dd class="slds-item_detail">{bookingNumPassengers}</dd>
+                                                <dt class="slds-item_label">Departure:</dt>
+                                                <dd class="slds-item_detail">{flightDepartureCity} → {flightDestinationCity}</dd>
+                                                <dt class="slds-item_label">Date:</dt>
+                                                <dd class="slds-item_detail">{formattedDepartureDate}</dd>
+                                            </dl>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <dl class="slds-list_horizontal">
+                                                <dt class="slds-item_label">Hotel Required:</dt>
+                                                <dd class="slds-item_detail">{hotelRequired}</dd>
+                                                <dt class="slds-item_label">Visa Required:</dt>
+                                                <dd class="slds-item_detail">{visaRequired}</dd>
+                                                <dt class="slds-item_label">Transport Required:</dt>
+                                                <dd class="slds-item_detail">{gtRequired}</dd>
+                                                <dt class="slds-item_label">Budget Limit:</dt>
+                                                <dd class="slds-item_detail">{bookingBudgetLimit}</dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-m-top_medium">
+                                    <lightning-textarea label="Final Comments/Instructions" value={finalComments} onchange={handleBookingInputChange} data-id="finalComments" rows="3" placeholder="Any final instructions or special requirements..."></lightning-textarea>
+                                </div>
                             </div>
                         </template>
                     </template>
                 </div>
+
+                <!-- Modal Footer -->
                 <footer class="slds-modal__footer">
-                    <template if:true={isLoading}>
-                        <div class="slds-is-relative slds-p-around_medium">
-                            <lightning-spinner alternative-text="Saving booking..." size="small"></lightning-spinner>
+                    <div class="slds-grid slds-grid_align-spread">
+                        <div class="slds-col">
+                            <template if:true={showBack}>
+                                <lightning-button label="Back" onclick={handleBack} variant="neutral"></lightning-button>
+                            </template>
                         </div>
-                    </template>
-                    <template if:false={isLoading}>
-                        <lightning-button label="Close" onclick={handleClose} class="slds-m-right_small"></lightning-button>
-                        <lightning-button label="Back" onclick={handleBack} class="slds-m-right_small" if:true={showBack}></lightning-button>
-                        <lightning-button label="Next" variant="brand" onclick={handleNext} if:true={showNext}></lightning-button>
-                        <lightning-button label="Save & Continue" variant="brand" onclick={handleSaveAndContinue} if:true={showSaveAndContinue}></lightning-button>
-                    </template>
+                        
+                        <div class="slds-col slds-text-align_right">
+                            <lightning-button label="Close" onclick={handleClose} variant="neutral" class="slds-m-right_small"></lightning-button>
+                            
+                            <template if:true={showNext}>
+                                <lightning-button label="Next" onclick={handleNext} variant="brand"></lightning-button>
+                            </template>
+                            
+                            <template if:true={showSaveAndContinue}>
+                                <lightning-button label="Generate Quote" onclick={handleGenerateQuote} variant="brand"></lightning-button>
+                            </template>
+                        </div>
+                    </div>
                 </footer>
             </div>
         </div>

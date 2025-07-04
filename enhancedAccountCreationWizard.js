@@ -21,6 +21,9 @@ import ACCOUNT_ROOM_TYPE_FIELD from '@salesforce/schema/Account.Room_Type__c';
 import ACCOUNT_MEAL_PREFERENCE_FIELD from '@salesforce/schema/Account.Meal_Preference__c';
 import ACCOUNT_SLA_COMMITMENT_FIELD from '@salesforce/schema/Account.SLA_Commitment__c';
 import ACCOUNT_MAX_TRAVEL_LIMIT_FIELD from '@salesforce/schema/Account.Max_Travel_Limit__c';
+import ACCOUNT_VISA_TYPE_FIELD from '@salesforce/schema/Account.Visa_Type__c';
+import ACCOUNT_MODES_OF_TRANSPORT_FIELD from '@salesforce/schema/Account.Modes_of_Transport__c';
+import ACCOUNT_PREFERRED_VENDORS_FIELD from '@salesforce/schema/Account.Preferred_Vendors__c';
 
 export default class EnhancedAccountCreationWizard extends NavigationMixin(LightningElement) {
     @track currentStep = '1'; // Exactly like your original component
@@ -63,6 +66,19 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
     @track urgencyToOnboardOptions = [];
     @track urgencyToOnboard = '';
     @track travelPolicy = '';
+
+    // Visa Services
+    @track visaAssistanceRequired = '';
+    @track visaTypeOptions = [];
+    @track visaType = '';
+    @track visaDocuments = '';
+
+    // Ground Transport
+    @track requireGroundTransport = '';
+    @track modesOfTransportOptions = [];
+    @track modesOfTransport = [];
+    @track preferredVendorsOptions = [];
+    @track preferredVendors = '';
 
     // Step 2: Travel Preferences - EXACT SAME AS ORIGINAL
     @track preferredAirlinesOptions = [];
@@ -246,6 +262,36 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
         }
     }
 
+    @wire(getPicklistValues, { recordTypeId: "012Kd000001V5KEIA0", fieldApiName: ACCOUNT_VISA_TYPE_FIELD })
+    wiredVisaTypeValues({ error, data }) {
+        if (data) {
+            this.visaTypeOptions = data.values.map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+        }
+    }
+
+    @wire(getPicklistValues, { recordTypeId: "012Kd000001V5KEIA0", fieldApiName: ACCOUNT_MODES_OF_TRANSPORT_FIELD })
+    wiredModesOfTransportValues({ error, data }) {
+        if (data) {
+            this.modesOfTransportOptions = data.values.map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+        }
+    }
+
+    @wire(getPicklistValues, { recordTypeId: "012Kd000001V5KEIA0", fieldApiName: ACCOUNT_PREFERRED_VENDORS_FIELD })
+    wiredPreferredVendorsValues({ error, data }) {
+        if (data) {
+            this.preferredVendorsOptions = data.values.map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+        }
+    }
+
     // --- Computed Properties - EXACT SAME AS ORIGINAL ---
     get isAccountPage1() { return this.currentStep === '1'; }
     get isAccountPage2() { return this.currentStep === '2'; }
@@ -261,6 +307,14 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
 
     get showAgreementFileUpload() {
         return this.agreementSigned === 'Yes';
+    }
+
+    get showVisaFields() {
+        return this.visaAssistanceRequired === 'Yes';
+    }
+
+    get showGroundTransportFields() {
+        return this.requireGroundTransport === 'Yes';
     }
 
     // File handling computed properties - EXACT SAME AS ORIGINAL
@@ -385,7 +439,13 @@ export default class EnhancedAccountCreationWizard extends NavigationMixin(Light
                 Custom_Terms__c: this.customTerms,
                 Employees_Book_Directly__c: this.employeesBookDirectly === 'Yes',
                 Require_Booking_Approvals__c: this.requireBookingApprovals === 'Yes',
-                Max_Travel_Limit__c: this.maxTravelLimit
+                Max_Travel_Limit__c: this.maxTravelLimit,
+                Visa_Assistance_Required__c: this.visaAssistanceRequired === 'Yes',
+                Visa_Type__c: this.visaType,
+                Visa_Documents__c: this.visaDocuments,
+                Require_Ground_Transport__c: this.requireGroundTransport === 'Yes',
+                Modes_of_Transport__c: this.modesOfTransport.join(';'),
+                Preferred_Vendors__c: this.preferredVendors
             };
 
             // Prepare Contact fields - EXACT SAME AS ORIGINAL
